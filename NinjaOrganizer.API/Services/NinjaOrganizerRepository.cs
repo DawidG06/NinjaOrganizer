@@ -5,6 +5,8 @@ using System.Threading.Tasks;
 using NinjaOrganizer.API.Contexts;
 using NinjaOrganizer.API.Entities;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.ChangeTracking;
+using Microsoft.EntityFrameworkCore.Metadata.Internal;
 
 namespace NinjaOrganizer.API.Services
 {
@@ -69,6 +71,20 @@ namespace NinjaOrganizer.API.Services
 
         public bool Save()
         {
+            var AddedEntities = _context.ChangeTracker.Entries().Where(E => E.State == EntityState.Added).ToList();
+            AddedEntities.ForEach(E =>
+            {
+                if(E.Metadata.DisplayName() == "Card")
+                    E.Property("Created").CurrentValue = DateTime.Now;
+            });
+
+            var EditedEntities = _context.ChangeTracker.Entries().Where(E => E.State == EntityState.Modified).ToList();
+            EditedEntities.ForEach(E =>
+            {
+                if (E.Metadata.DisplayName() == "Card")
+                    E.Property("Updated").CurrentValue = DateTime.Now;
+            });
+
             return (_context.SaveChanges() >= 0);
         }
 
