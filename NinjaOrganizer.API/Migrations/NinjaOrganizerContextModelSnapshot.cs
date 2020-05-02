@@ -49,12 +49,11 @@ namespace NinjaOrganizer.API.Migrations
                     b.ToTable("Cards");
 
                     b.HasData(
-                        new { Id = 1, Content = "opis zadanie 1 tablicy 1", Created = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), Priority = 0, State = 0, TaskboardId = 1, Title = "zadanie 1 tablicy 1" },
-                        new { Id = 2, Content = "opis zadanie 2 tablicy 1", Created = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), Priority = 0, State = 1, TaskboardId = 1, Title = "zadanie 2 tablicy 1" },
-                        new { Id = 3, Content = "owocowe lub karmelowe", Created = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), Priority = 0, State = 0, TaskboardId = 2, Title = "lody" },
-                        new { Id = 4, Content = "mleczna biala", Created = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), Priority = 2, State = 0, TaskboardId = 2, Title = "czekolada" },
-                        new { Id = 5, Content = "kolor farby bezowy lub jasnoniebieski", Created = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), Priority = 1, State = 1, TaskboardId = 3, Title = "pomalowac sciany" },
-                        new { Id = 6, Content = "zamowic z bylej firmy Krisa ;-)", Created = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), Priority = 2, State = 0, TaskboardId = 3, Title = "wymienic gniazdka" }
+                        new { Id = 1, Content = "opis zadanie 1 tablicy 1", Created = new DateTime(2020, 5, 2, 17, 8, 34, 193, DateTimeKind.Local), Priority = 0, State = 0, TaskboardId = 1, Title = "zadanie 1 tablicy 1" },
+                        new { Id = 2, Content = "opis zadanie 2 tablicy 1", Created = new DateTime(2020, 5, 2, 17, 8, 34, 197, DateTimeKind.Local), Priority = 0, State = 1, TaskboardId = 1, Title = "zadanie 2 tablicy 1" },
+                        new { Id = 3, Content = "owocowe lub karmelowe", Created = new DateTime(2020, 5, 1, 17, 8, 34, 197, DateTimeKind.Local), Priority = 0, State = 0, TaskboardId = 2, Title = "lody", Updated = new DateTime(2020, 5, 2, 17, 8, 34, 197, DateTimeKind.Local) },
+                        new { Id = 4, Content = "mleczna biala", Created = new DateTime(2020, 5, 2, 17, 8, 34, 197, DateTimeKind.Local), Priority = 2, State = 0, TaskboardId = 2, Title = "czekolada" },
+                        new { Id = 5, Content = "kolor farby bezowy lub jasnoniebieski", Created = new DateTime(2020, 5, 2, 17, 8, 34, 197, DateTimeKind.Local), Priority = 1, State = 1, TaskboardId = 3, Title = "pomalowac sciany" }
                     );
                 });
 
@@ -64,6 +63,8 @@ namespace NinjaOrganizer.API.Migrations
                         .ValueGeneratedOnAdd()
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
+                    b.Property<DateTime>("Created");
+
                     b.Property<string>("Description")
                         .HasMaxLength(200);
 
@@ -71,14 +72,16 @@ namespace NinjaOrganizer.API.Migrations
                         .IsRequired()
                         .HasMaxLength(50);
 
+                    b.Property<DateTime?>("Updated");
+
                     b.HasKey("Id");
 
                     b.ToTable("Taskboards");
 
                     b.HasData(
-                        new { Id = 1, Description = "opis tablicy pierwszej", Title = "Tablica 1" },
-                        new { Id = 2, Description = "Lista zakupow", Title = "Zakupy" },
-                        new { Id = 3, Description = "opis remontu", Title = "Remont" }
+                        new { Id = 1, Created = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), Description = "opis tablicy pierwszej", Title = "Tablica 1" },
+                        new { Id = 2, Created = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), Description = "Lista zakupow", Title = "Zakupy" },
+                        new { Id = 3, Created = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), Description = "opis remontu", Title = "Remont" }
                     );
                 });
 

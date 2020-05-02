@@ -61,7 +61,14 @@ namespace NinjaOrganizer.API.Services
 
         public void UpdateCardForTaskboard(int taskboardId, Card card)
         {
+            // TODO sprawdzic
+            _context.Cards.Update(card);
+        }
 
+        public void UpdateTaskboard(int taskboardId, Taskboard taskboard)
+        {
+            //TODO sprawdzic
+            _context.Taskboards.Update(taskboard);
         }
 
         public void DeleteCard(Card card)
@@ -74,14 +81,16 @@ namespace NinjaOrganizer.API.Services
             var AddedEntities = _context.ChangeTracker.Entries().Where(E => E.State == EntityState.Added).ToList();
             AddedEntities.ForEach(E =>
             {
-                if(E.Metadata.DisplayName() == "Card")
+                string displayName = E.Metadata.DisplayName();
+                if (displayName == "Card" || displayName == "Taskboard")
                     E.Property("Created").CurrentValue = DateTime.Now;
             });
 
             var EditedEntities = _context.ChangeTracker.Entries().Where(E => E.State == EntityState.Modified).ToList();
             EditedEntities.ForEach(E =>
             {
-                if (E.Metadata.DisplayName() == "Card")
+                string displayName = E.Metadata.DisplayName();
+                if (displayName == "Card" || displayName == "Taskboard")
                     E.Property("Updated").CurrentValue = DateTime.Now;
             });
 

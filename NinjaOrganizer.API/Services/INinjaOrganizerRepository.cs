@@ -25,6 +25,8 @@ namespace NinjaOrganizer.API.Services
 
         void UpdateCardForTaskboard(int taskboardId, Card card);
 
+        void UpdateTaskboard(int taskboardId, Taskboard taskboard);
+
         void DeleteCard(Card card);
 
         bool Save();

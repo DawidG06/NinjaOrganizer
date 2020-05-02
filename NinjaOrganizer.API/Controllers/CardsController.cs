@@ -95,10 +95,12 @@ namespace NinjaOrganizer.API.Controllers
                 return NotFound();
             }
 
+            
+
             var finalCard = _mapper.Map<Entities.Card>(card);
 
             _ninjaOrganizerRepository.AddCardForTaskboard(taskboardId, finalCard);
-
+            
             _ninjaOrganizerRepository.Save();
 
             var createdCardToReturn = _mapper
@@ -151,6 +153,7 @@ namespace NinjaOrganizer.API.Controllers
         public IActionResult PartiallyUpdateCard(int taskboardId, int id,
             [FromBody] JsonPatchDocument<CardForUpdateDto> patchDoc)
         {
+            throw new NotImplementedException("CardsController/patch -sprawdzic czy dziala");
             if (!_ninjaOrganizerRepository.TaskboardExists(taskboardId))
             {
                 return NotFound();

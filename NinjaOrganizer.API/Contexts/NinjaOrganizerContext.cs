@@ -43,7 +43,6 @@ namespace NinjaOrganizer.API.Contexts
                      Description = "opis remontu"
                  });
 
-
             modelBuilder.Entity<Card>()
               .HasData(
                 new Card()
@@ -53,7 +52,8 @@ namespace NinjaOrganizer.API.Contexts
                     Title = "zadanie 1 tablicy 1",
                     Content = "opis zadanie 1 tablicy 1",
                     State = CardState.ToDo,
-                    Priority = CardPriority.Low
+                    Priority = CardPriority.Low,
+                    Created = DateTime.Now
                 },
                 new Card()
                 {
@@ -62,7 +62,8 @@ namespace NinjaOrganizer.API.Contexts
                     Title = "zadanie 2 tablicy 1",
                     Content = "opis zadanie 2 tablicy 1",
                     State = CardState.InProgress,
-                    Priority = CardPriority.Low
+                    Priority = CardPriority.Low,
+                    Created = DateTime.Now
                 },
                 new Card()
                 {
@@ -71,7 +72,9 @@ namespace NinjaOrganizer.API.Contexts
                     Title = "lody",
                     Content = "owocowe lub karmelowe",
                     State = CardState.ToDo,
-                    Priority = CardPriority.Low
+                    Priority = CardPriority.Low,
+                    Created = DateTime.Now.AddDays(-1),
+                    Updated = DateTime.Now
                 },
                 new Card()
                 {
@@ -80,7 +83,8 @@ namespace NinjaOrganizer.API.Contexts
                     Title = "czekolada",
                     Content = "mleczna biala",
                     State = CardState.ToDo,
-                    Priority = CardPriority.High
+                    Priority = CardPriority.High,
+                    Created = DateTime.Now
                 },
                 new Card()
                 {
@@ -89,18 +93,10 @@ namespace NinjaOrganizer.API.Contexts
                     Title = "pomalowac sciany",
                     Content = "kolor farby bezowy lub jasnoniebieski",
                     State = CardState.InProgress,
-                    Priority = CardPriority.Medium
-                },
-                new Card()
-                {
-                    Id = 6,
-                    TaskboardId = 3,
-                    Title = "wymienic gniazdka",
-                    Content = "zamowic z bylej firmy Krisa ;-)",
-                    State = CardState.ToDo,
-                    Priority = CardPriority.High
+                    Priority = CardPriority.Medium,
+                    Created = DateTime.Now
                 }
-                );
+                ); ;
 
             base.OnModelCreating(modelBuilder);
         }

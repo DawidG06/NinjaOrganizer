@@ -32,7 +32,7 @@ namespace NinjaOrganizer.API
                     {
                         var context = scope.ServiceProvider.GetService<NinjaOrganizerContext>();
 
-                        //context.Database.EnsureDeleted(); //for restore db to default value
+                        context.Database.EnsureDeleted(); //for restore db to default value
                         context.Database.Migrate();
                     }
                     catch (Exception ex)

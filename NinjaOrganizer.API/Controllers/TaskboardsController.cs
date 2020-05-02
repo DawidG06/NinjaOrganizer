@@ -6,6 +6,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.JsonPatch;
 
 namespace NinjaOrganizer.API.Controllers
 {
@@ -16,10 +17,10 @@ namespace NinjaOrganizer.API.Controllers
         private readonly INinjaOrganizerRepository _ninjaOrganizerRepository;
         private readonly IMapper _mapper;
 
-        public TaskboardsController(INinjaOrganizerRepository ninjaOrganizerRepository, 
+        public TaskboardsController(INinjaOrganizerRepository ninjaOrganizerRepository,
             IMapper mapper)
         {
-            _ninjaOrganizerRepository = ninjaOrganizerRepository ?? 
+            _ninjaOrganizerRepository = ninjaOrganizerRepository ??
                 throw new ArgumentNullException(nameof(ninjaOrganizerRepository));
             _mapper = mapper ??
                 throw new ArgumentNullException(nameof(mapper));
@@ -45,7 +46,7 @@ namespace NinjaOrganizer.API.Controllers
             return Ok(_mapper.Map<IEnumerable<TaskboardWithoutCardsDto>>(taskboardEntities));
         }
 
-        [HttpGet("{id}", Name ="GetTaskboard")]
+        [HttpGet("{id}", Name = "GetTaskboard")]
         public IActionResult GetTaskboard(int id, bool includeCards = false)
         {
             var taskboard = _ninjaOrganizerRepository.GetTaskboard(id, includeCards);
@@ -53,13 +54,13 @@ namespace NinjaOrganizer.API.Controllers
             if (taskboard == null)
             {
                 return NotFound();
-            } 
+            }
 
             if (includeCards)
             {
                 return Ok(_mapper.Map<TaskboardDto>(taskboard));
             }
-            
+
             return Ok(_mapper.Map<TaskboardWithoutCardsDto>(taskboard));
         }
 
@@ -78,7 +79,7 @@ namespace NinjaOrganizer.API.Controllers
             var createdTaskboardToReturn = _mapper.Map<Models.TaskboardDto>(finalTaskboard);
 
             return CreatedAtRoute(
-                "GetTaskboard", 
+                "GetTaskboard",
                 new { id = createdTaskboardToReturn.Id },
                 createdTaskboardToReturn);
         }
@@ -89,7 +90,7 @@ namespace NinjaOrganizer.API.Controllers
             if (!_ninjaOrganizerRepository.TaskboardExists(id))
                 return NotFound();
 
-            var taskboardEntity = _ninjaOrganizerRepository.GetTaskboard(id,false);
+            var taskboardEntity = _ninjaOrganizerRepository.GetTaskboard(id, false);
             if (taskboardEntity == null)
                 return NotFound();
 
@@ -99,6 +100,46 @@ namespace NinjaOrganizer.API.Controllers
             return NoContent();
         }
 
+        [HttpPatch("{id}")]
+        public IActionResult PartiallyUpdateTaskboard(int id, [FromBody] TaskboardForUpdateDto patchDoc)
+        {
+            throw new NotImplementedException("TaskboardController/patch");
+        }
+
+        [HttpPut("{id}")]
+        public IActionResult UpdateTaskboard(int id,[FromBody] TaskboardForUpdateDto taskboard)
+        {
+            if (taskboard.Description == taskboard.Title)
+            {
+                ModelState.AddModelError(
+                    "Description",
+                    "The provided description should be different from the name.");
+            }
+
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
+            if (!_ninjaOrganizerRepository.TaskboardExists(id))
+            {
+                return NotFound();
+            }
+
+            var taskboardEntity = _ninjaOrganizerRepository.GetTaskboard(id, false);
+            if (taskboardEntity == null)
+            {
+                return NotFound();
+            }
+
+            _mapper.Map(taskboard, taskboardEntity);
+
+            _ninjaOrganizerRepository.UpdateTaskboard(id, taskboardEntity);
+
+            _ninjaOrganizerRepository.Save();
+
+            return NoContent();
+        }
 
     }
 }

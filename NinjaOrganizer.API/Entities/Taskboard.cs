@@ -18,6 +18,10 @@ namespace NinjaOrganizer.API.Entities
         [MaxLength(200)]
         public string Description { get; set; }
 
+
+        public DateTime Created { get; set; }
+        public DateTime? Updated { get; set; }
+
         public ICollection<Card> Cards { get; set; }
                = new List<Card>();
     }
