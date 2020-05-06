@@ -10,20 +10,19 @@ namespace NinjaOrganizer.API.Models
     {
 
         public string Email { get; set; }
-        public string Name { get; set; }
-        public string Password { get; set; }
+        public string FirstName { get; set; }
+        public string LastName { get; set; }
+        public string Username { get; set; }
 
-        public AccountState State { get; set; }
-
-        public int NumberOfTaskboards
-        {
-            get
-            {
-                return Taskboards.Count;
-            }
-        }
-        public ICollection<Card> Taskboards { get; set; }
-               = new List<Card>();
+        //public int NumberOfTaskboards
+        //{
+        //    get
+        //    {
+        //        return Taskboards.Count;
+        //    }
+        //}
+        //public ICollection<Card> Taskboards { get; set; }
+        //       = new List<Card>();
 
 
     }

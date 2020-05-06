@@ -12,6 +12,8 @@ namespace NinjaOrganizer.API.Contexts
         public DbSet<Taskboard> Taskboards { get; set; }
         public DbSet<Card> Cards { get; set; }
 
+        public DbSet<User> Users { get; set; }
+
         public NinjaOrganizerContext(DbContextOptions<NinjaOrganizerContext> options)
            : base(options)
         {
