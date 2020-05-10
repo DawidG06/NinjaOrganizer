@@ -88,8 +88,10 @@ namespace NinjaOrganizer.API
                             // return unauthorized if user no longer exists
                             context.Fail("Unauthorized");
                         }
+
                         return Task.CompletedTask;
                     }
+                   
                 };
                 x.RequireHttpsMetadata = false;
                 x.SaveToken = true;
@@ -127,7 +129,8 @@ namespace NinjaOrganizer.API
             .AllowAnyHeader());
 
             app.UseAuthentication();
-           // app.UseAuthorization();
+             //app.UseAuthorization();
+            
 
             app.UseStatusCodePages();
 

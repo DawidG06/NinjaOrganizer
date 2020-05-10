@@ -8,11 +8,13 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 
 namespace NinjaOrganizer.API.Controllers
 {
+    [Authorize]
     [ApiController]
-    [Route("api/taskboards/{taskboardId}/cards")]
+    [Route("api/users/{userId}/taskboards/{taskboardId}/cards")]
     public class CardsController : ControllerBase
     {
         private readonly ILogger<CardsController> _logger;

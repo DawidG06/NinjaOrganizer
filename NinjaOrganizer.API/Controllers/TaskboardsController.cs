@@ -7,11 +7,13 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.JsonPatch;
+using Microsoft.AspNetCore.Authorization;
 
 namespace NinjaOrganizer.API.Controllers
 {
+    [Authorize]
     [ApiController]
-    [Route("api/taskboards")]
+    [Route("api/users/{userId}/taskboards")]
     public class TaskboardsController : ControllerBase
     {
         private readonly INinjaOrganizerRepository _ninjaOrganizerRepository;
@@ -27,8 +29,14 @@ namespace NinjaOrganizer.API.Controllers
         }
 
         [HttpGet]
-        public IActionResult GetTaskboards()
+        public IActionResult GetTaskboards(int userId)
         {
+            //test
+            var taskboardsForUser = _ninjaOrganizerRepository.GetTaskboardsForUser(userId);
+            return Ok(_mapper.Map<IEnumerable<TaskboardWithoutCardsDto>>(taskboardsForUser));
+            //test <-
+
+
             var taskboardEntities = _ninjaOrganizerRepository.GetTaskboards();
 
             //var results = new List<TaskboardWithoutCardsDto>();
@@ -65,13 +73,14 @@ namespace NinjaOrganizer.API.Controllers
         }
 
         [HttpPost]
-        public IActionResult CreateTaskboard([FromBody] TaskboardForCreationDto taskboard)
+        public IActionResult CreateTaskboard(int userId, [FromBody] TaskboardForCreationDto taskboard)
         {
 
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
 
             var finalTaskboard = _mapper.Map<Entities.Taskboard>(taskboard);
+            finalTaskboard.UserId = userId;
 
             _ninjaOrganizerRepository.AddTaskboard(finalTaskboard);
             _ninjaOrganizerRepository.Save();

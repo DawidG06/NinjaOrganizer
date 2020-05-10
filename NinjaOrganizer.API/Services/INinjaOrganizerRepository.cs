@@ -11,6 +11,7 @@ namespace NinjaOrganizer.API.Services
         IEnumerable<Taskboard> GetTaskboards();
 
         Taskboard GetTaskboard(int taskboardId, bool includeCards);
+        IEnumerable<Taskboard> GetTaskboardsForUser(int userId);
 
         void AddTaskboard(Taskboard taskboard);
         void DeleteTaskboard(Taskboard taskboard);

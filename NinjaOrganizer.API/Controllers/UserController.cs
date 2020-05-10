@@ -55,11 +55,12 @@ namespace NinjaOrganizer.API.Controllers
                 {
                     new Claim(ClaimTypes.Name, user.Id.ToString())
                 }),
-                Expires = DateTime.UtcNow.AddDays(7),
+                Expires = DateTime.UtcNow.AddDays(7), //TODO sprawdzic czy dziala i zwalidowac
                 SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature)
             };
             var token = tokenHandler.CreateToken(tokenDescriptor);
             var tokenString = tokenHandler.WriteToken(token);
+            var expiresDate = token.ValidTo;
 
             // return basic user info and authentication token
             return Ok(new
@@ -68,7 +69,8 @@ namespace NinjaOrganizer.API.Controllers
                 Username = user.Username,
                 FirstName = user.FirstName,
                 LastName = user.LastName,
-                Token = tokenString
+                Token = tokenString,
+                Expires = expiresDate
             });
         }
 
