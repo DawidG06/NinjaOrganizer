@@ -16,20 +16,10 @@ namespace NinjaOrganizer.API.Entities
 
     public class User
     {
-        [Key]
-        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
-        public string Email { get; set; }
-
-        [Required]
-        [MaxLength(50)]
+        public int Id { get; set; }
         public string FirstName { get; set; }
-
-        [MaxLength(50)]
         public string LastName { get; set; }
-
-        [MaxLength(50)]
         public string Username { get; set; }
-
         public byte[] PasswordHash { get; set; }
         public byte[] PasswordSalt { get; set; }
 

@@ -18,22 +18,23 @@ namespace NinjaOrganizer.API.Services
             _context = context ?? throw new ArgumentNullException(nameof(context));
         }
 
-        public User Authenticate(string email, string password)
+        public User Authenticate(string username, string password)
         {
-            if (string.IsNullOrEmpty(email) || string.IsNullOrEmpty(password))
+            if (string.IsNullOrEmpty(username) || string.IsNullOrEmpty(password))
                 return null;
 
-            var user = _context.Users.SingleOrDefault(u => u.Email == email);
+            var user = _context.Users.SingleOrDefault(x => x.Username == username);
 
-            //if user not exists
+            // check if username exists
             if (user == null)
                 return null;
 
-            //check password
+            // check if password is correct
             if (!checkPasswordHash(password, user.PasswordHash, user.PasswordSalt))
                 return null;
-            else
-                return user;
+
+            // authentication successful
+            return user;
         }
 
         private bool checkPasswordHash(string password, byte[] storedHash, byte[] storedSalt)
@@ -80,15 +81,23 @@ namespace NinjaOrganizer.API.Services
             user.PasswordSalt = passwordSalt;
 
             _context.Users.Add(user);
-            _context.SaveChanges();
+            try
+            {
+                _context.SaveChanges();
+            }
+            catch(Exception ex)
+            {
+                throw new Exception(ex.Message);
+                string ee = ex.Message;
+            }
 
             return user;
         }
 
-        public void Delete(string email)
+        public void Delete(int id)
         {
-            var user = _context.Users.Find(email);
-            if(user != null)
+            var user = _context.Users.Find(id);
+            if (user != null)
             {
                 _context.Users.Remove(user);
                 _context.SaveChanges();
@@ -100,26 +109,61 @@ namespace NinjaOrganizer.API.Services
             return _context.Users;
         }
 
-        public User GetByEmail(string email)
+        public User GetById(int id)
         {
-            return _context.Users.Find(email);
+            return _context.Users.Find(id);
         }
 
-        public void Update(User user, string password)
+        public void Update(User userParam, string password = null)
         {
-            var tmpUser = _context.Users.Find(user.Email);
+            var user = _context.Users.Find(userParam.Id);
 
-            //TODO sprawdzic czy istnieje i czy sa argumenty podane
+            if (user == null)
+                throw new Exception("User not found");
 
-            tmpUser.FirstName = user.FirstName;
-            tmpUser.LastName = user.LastName;
-            tmpUser.Username = user.Username;
-            byte[] salt;
-            tmpUser.PasswordHash = createPasswordHash(password, out salt);
-            tmpUser.PasswordHash=salt;
+            // update username if it has changed
+            if (!string.IsNullOrWhiteSpace(userParam.Username) && userParam.Username != user.Username)
+            {
+                // throw error if the new username is already taken
+                if (_context.Users.Any(x => x.Username == userParam.Username))
+                    throw new Exception("Username " + userParam.Username + " is already taken");
 
-            _context.Users.Update(tmpUser);
+                user.Username = userParam.Username;
+            }
+
+            // update user properties if provided
+            if (!string.IsNullOrWhiteSpace(userParam.FirstName))
+                user.FirstName = userParam.FirstName;
+
+            if (!string.IsNullOrWhiteSpace(userParam.LastName))
+                user.LastName = userParam.LastName;
+
+            // update password if provided
+            if (!string.IsNullOrWhiteSpace(password))
+            {
+                byte[] passwordHash, passwordSalt;
+                CreatePasswordHash(password, out passwordHash, out passwordSalt);
+
+                user.PasswordHash = passwordHash;
+                user.PasswordSalt = passwordSalt;
+            }
+
+            _context.Users.Update(user);
             _context.SaveChanges();
+        }
+
+        // private helper methods
+
+        private static void CreatePasswordHash(string password, out byte[] passwordHash, out byte[] passwordSalt)
+        {
+            if (password == null) throw new ArgumentNullException("password");
+            if (string.IsNullOrWhiteSpace(password)) throw new ArgumentException("Value cannot be empty or whitespace only string.", "password");
+
+            using (var hmac = new System.Security.Cryptography.HMACSHA512())
+            {
+                passwordSalt = hmac.Key;
+                passwordHash = hmac.ComputeHash(System.Text.Encoding.UTF8.GetBytes(password));
+            }
         }
     }
 }

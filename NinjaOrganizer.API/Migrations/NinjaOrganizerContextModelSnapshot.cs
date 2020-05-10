@@ -49,11 +49,11 @@ namespace NinjaOrganizer.API.Migrations
                     b.ToTable("Cards");
 
                     b.HasData(
-                        new { Id = 1, Content = "opis zadanie 1 tablicy 1", Created = new DateTime(2020, 5, 2, 17, 8, 34, 193, DateTimeKind.Local), Priority = 0, State = 0, TaskboardId = 1, Title = "zadanie 1 tablicy 1" },
-                        new { Id = 2, Content = "opis zadanie 2 tablicy 1", Created = new DateTime(2020, 5, 2, 17, 8, 34, 197, DateTimeKind.Local), Priority = 0, State = 1, TaskboardId = 1, Title = "zadanie 2 tablicy 1" },
-                        new { Id = 3, Content = "owocowe lub karmelowe", Created = new DateTime(2020, 5, 1, 17, 8, 34, 197, DateTimeKind.Local), Priority = 0, State = 0, TaskboardId = 2, Title = "lody", Updated = new DateTime(2020, 5, 2, 17, 8, 34, 197, DateTimeKind.Local) },
-                        new { Id = 4, Content = "mleczna biala", Created = new DateTime(2020, 5, 2, 17, 8, 34, 197, DateTimeKind.Local), Priority = 2, State = 0, TaskboardId = 2, Title = "czekolada" },
-                        new { Id = 5, Content = "kolor farby bezowy lub jasnoniebieski", Created = new DateTime(2020, 5, 2, 17, 8, 34, 197, DateTimeKind.Local), Priority = 1, State = 1, TaskboardId = 3, Title = "pomalowac sciany" }
+                        new { Id = 1, Content = "opis zadanie 1 tablicy 1", Created = new DateTime(2020, 5, 9, 19, 42, 19, 984, DateTimeKind.Local), Priority = 0, State = 0, TaskboardId = 1, Title = "zadanie 1 tablicy 1" },
+                        new { Id = 2, Content = "opis zadanie 2 tablicy 1", Created = new DateTime(2020, 5, 9, 19, 42, 19, 987, DateTimeKind.Local), Priority = 0, State = 1, TaskboardId = 1, Title = "zadanie 2 tablicy 1" },
+                        new { Id = 3, Content = "owocowe lub karmelowe", Created = new DateTime(2020, 5, 8, 19, 42, 19, 987, DateTimeKind.Local), Priority = 0, State = 0, TaskboardId = 2, Title = "lody", Updated = new DateTime(2020, 5, 9, 19, 42, 19, 987, DateTimeKind.Local) },
+                        new { Id = 4, Content = "mleczna biala", Created = new DateTime(2020, 5, 9, 19, 42, 19, 987, DateTimeKind.Local), Priority = 2, State = 0, TaskboardId = 2, Title = "czekolada" },
+                        new { Id = 5, Content = "kolor farby bezowy lub jasnoniebieski", Created = new DateTime(2020, 5, 9, 19, 42, 19, 987, DateTimeKind.Local), Priority = 1, State = 1, TaskboardId = 3, Title = "pomalowac sciany" }
                     );
                 });
 
@@ -83,6 +83,27 @@ namespace NinjaOrganizer.API.Migrations
                         new { Id = 2, Created = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), Description = "Lista zakupow", Title = "Zakupy" },
                         new { Id = 3, Created = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), Description = "opis remontu", Title = "Remont" }
                     );
+                });
+
+            modelBuilder.Entity("NinjaOrganizer.API.Entities.User", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<string>("FirstName");
+
+                    b.Property<string>("LastName");
+
+                    b.Property<byte[]>("PasswordHash");
+
+                    b.Property<byte[]>("PasswordSalt");
+
+                    b.Property<string>("Username");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Users");
                 });
 
             modelBuilder.Entity("NinjaOrganizer.API.Entities.Card", b =>

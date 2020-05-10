@@ -2,8 +2,10 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Server.Kestrel.Core.Internal.Http;
+using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using NinjaOrganizer.API.Entities;
+using NinjaOrganizer.API.Helpers;
 using NinjaOrganizer.API.Models;
 using NinjaOrganizer.API.Services;
 using System;
@@ -24,45 +26,48 @@ namespace NinjaOrganizer.API.Controllers
         private readonly INinjaOrganizerRepository _ninjaOrganizerRepository;
         private readonly IMapper _mapper;
         private readonly IUserService _userService;
-        private string secret = ""; //TODO moze bd trzeba przeniesc do klasy
+        private readonly AppSettings _appSettings;
 
-        public UserController(INinjaOrganizerRepository ninjaOrganizerRepository, IMapper mapper, IUserService userService)
+        public UserController(INinjaOrganizerRepository ninjaOrganizerRepository, IMapper mapper, IUserService userService, IOptions<AppSettings> appSettings)
         {
             _ninjaOrganizerRepository = ninjaOrganizerRepository ??
                throw new ArgumentNullException(nameof(ninjaOrganizerRepository));
             _mapper = mapper ??
                 throw new ArgumentNullException(nameof(mapper));
             _userService = userService ?? throw new ArgumentNullException(nameof(userService));
+            _appSettings = appSettings.Value;
         }
 
         [AllowAnonymous]
         [HttpPost("authenticate")]
         public IActionResult Authenticate([FromBody]UserForAuthenticateDto userForAuth)
         {
-            var user = _userService.Authenticate(userForAuth.Email, userForAuth.Password);
+            var user = _userService.Authenticate(userForAuth.Username, userForAuth.Password);
 
             if (user == null)
-                return BadRequest(new { message = "Email or password is incorrect." });
+                return BadRequest(new { message = "Username or password is incorrect" });
 
             var tokenHandler = new JwtSecurityTokenHandler();
-            var key = Encoding.ASCII.GetBytes(secret);
-
+            var key = Encoding.ASCII.GetBytes(_appSettings.Secret);
             var tokenDescriptor = new SecurityTokenDescriptor
             {
                 Subject = new ClaimsIdentity(new Claim[]
                 {
-                    new Claim(ClaimTypes.Email,userForAuth.Email)
+                    new Claim(ClaimTypes.Name, user.Id.ToString())
                 }),
-                Expires = DateTime.Now.AddDays(7),
+                Expires = DateTime.UtcNow.AddDays(7),
                 SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature)
             };
-
             var token = tokenHandler.CreateToken(tokenDescriptor);
             var tokenString = tokenHandler.WriteToken(token);
 
+            // return basic user info and authentication token
             return Ok(new
             {
-                Email = userForAuth.Email,
+                Id = user.Id,
+                Username = user.Username,
+                FirstName = user.FirstName,
+                LastName = user.LastName,
                 Token = tokenString
             });
         }
@@ -93,20 +98,20 @@ namespace NinjaOrganizer.API.Controllers
             return Ok(userDto);
         }
 
-        [HttpGet("{email}")]
-        public IActionResult GetById(string email)
+        [HttpGet("{id}")]
+        public IActionResult GetById(int id)
         {
-            var user = _userService.GetByEmail(email);
+            var user = _userService.GetById(id);
             var model = _mapper.Map<UserDto>(user);
             return Ok(model);
         }
 
-        [HttpPut("{email}")]
-        public IActionResult Update(string email, [FromBody]UserForUpdateDto userForUpdate)
+        [HttpPut("{id}")]
+        public IActionResult Update(int id, [FromBody]UserForUpdateDto userForUpdate)
         {
             // map model to entity and set id
             var user = _mapper.Map<User>(userForUpdate);
-            user.Email = email;
+            user.Id = id;
 
             try
             {
@@ -121,10 +126,10 @@ namespace NinjaOrganizer.API.Controllers
             }
         }
 
-        [HttpDelete("{email}")]
-        public IActionResult Delete(string email)
+        [HttpDelete("{id}")]
+        public IActionResult Delete(int id)
         {
-            _userService.Delete(email);
+            _userService.Delete(id);
             return Ok();
         }
 
