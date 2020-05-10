@@ -24,6 +24,8 @@ namespace NinjaOrganizer.API.Models
         //public ICollection<Card> Taskboards { get; set; }
         //       = new List<Card>();
 
+        public ICollection<TaskboardDto> Taskboards { get; set; }
+         = new List<TaskboardDto>();
 
     }
 }

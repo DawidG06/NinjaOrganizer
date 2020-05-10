@@ -23,6 +23,17 @@ namespace NinjaOrganizer.API.Contexts
         
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
+            modelBuilder.Entity<User>()
+                .HasData(
+                new User()
+                {
+                    Id = 1,
+                    Username = "Username1",
+                    FirstName = "First name1",
+                    LastName = "Last name1"
+
+                }
+                );
 
             modelBuilder.Entity<Taskboard>()
                   .HasData(
@@ -30,19 +41,22 @@ namespace NinjaOrganizer.API.Contexts
                  {
                      Id = 1,
                      Title = "Tablica 1",
-                     Description = "opis tablicy pierwszej"
+                     Description = "opis tablicy pierwszej",
+                     UserId = 1
                  },
                  new Taskboard()
                  {
                      Id = 2,
                      Title = "Zakupy",
-                     Description = "Lista zakupow"
+                     Description = "Lista zakupow",
+                     UserId = 1
                  },
                  new Taskboard()
                  {
                      Id = 3,
                      Title = "Remont",
-                     Description = "opis remontu"
+                     Description = "opis remontu",
+                     UserId = 1
                  });
 
             modelBuilder.Entity<Card>()
@@ -98,7 +112,7 @@ namespace NinjaOrganizer.API.Contexts
                     Priority = CardPriority.Medium,
                     Created = DateTime.Now
                 }
-                ); ;
+                );
 
             base.OnModelCreating(modelBuilder);
         }

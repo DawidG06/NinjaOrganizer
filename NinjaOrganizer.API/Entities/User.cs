@@ -16,6 +16,7 @@ namespace NinjaOrganizer.API.Entities
 
     public class User
     {
+        [Key]
         public int Id { get; set; }
         public string FirstName { get; set; }
         public string LastName { get; set; }
@@ -23,8 +24,10 @@ namespace NinjaOrganizer.API.Entities
         public byte[] PasswordHash { get; set; }
         public byte[] PasswordSalt { get; set; }
 
-        //public ICollection<Card> Taskboards { get; set; }
-        //       = new List<Card>();
+ 
+
+        public ICollection<Taskboard> Taskboards { get; set; }
+              = new List<Taskboard>();
 
     }
 }

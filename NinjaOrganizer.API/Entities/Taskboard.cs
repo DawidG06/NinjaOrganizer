@@ -24,5 +24,9 @@ namespace NinjaOrganizer.API.Entities
 
         public ICollection<Card> Cards { get; set; }
                = new List<Card>();
+
+        [ForeignKey("UserId")]
+        public User User { get; set; }
+        public int UserId { get; set; }
     }
 }
