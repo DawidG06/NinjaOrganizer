@@ -13,7 +13,7 @@ namespace NinjaOrganizer.API.Controllers
 {
     [Authorize]
     [ApiController]
-    [Route("api/users/{userId}/taskboards")]
+    [Route("users/{userId}/taskboards")]
     public class TaskboardsController : ControllerBase
     {
         private readonly INinjaOrganizerRepository _ninjaOrganizerRepository;

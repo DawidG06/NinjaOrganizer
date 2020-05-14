@@ -20,7 +20,8 @@ namespace NinjaOrganizer.API.Controllers
 {
     [Authorize]
     [ApiController]
-    [Route("api/users")]
+   // [Route("api/users")]
+    [Route("users")]
     public class UserController : ControllerBase
     {
         private readonly INinjaOrganizerRepository _ninjaOrganizerRepository;

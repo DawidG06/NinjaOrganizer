@@ -14,7 +14,7 @@ namespace NinjaOrganizer.API.Controllers
 {
     [Authorize]
     [ApiController]
-    [Route("api/users/{userId}/taskboards/{taskboardId}/cards")]
+    [Route("users/{userId}/taskboards/{taskboardId}/cards")]
     public class CardsController : ControllerBase
     {
         private readonly ILogger<CardsController> _logger;
