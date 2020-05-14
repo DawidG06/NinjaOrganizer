@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using Microsoft.AspNetCore.JsonPatch;
 using NinjaOrganizer.API.Entities;
 using System;
 using System.Collections.Generic;
@@ -13,7 +14,7 @@ namespace NinjaOrganizer.API.Profiles
         {
             CreateMap<Entities.User, Models.UserDto>();
             CreateMap<Models.UserForRegisterDto, Entities.User>().ReverseMap();
-
+            CreateMap<Models.UserForUpdateDto, Entities.User>().ReverseMap();
         }
 
 

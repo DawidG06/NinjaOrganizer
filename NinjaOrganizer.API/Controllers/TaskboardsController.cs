@@ -33,6 +33,10 @@ namespace NinjaOrganizer.API.Controllers
         {
             //test
             var taskboardsForUser = _ninjaOrganizerRepository.GetTaskboardsForUser(userId);
+
+            foreach(var taskboard in taskboardsForUser)
+                taskboard.Cards = _ninjaOrganizerRepository.GetCardsForTaskboard(taskboard.Id).ToList();
+
             return Ok(_mapper.Map<IEnumerable<TaskboardWithoutCardsDto>>(taskboardsForUser));
             //test <-
 
@@ -63,6 +67,8 @@ namespace NinjaOrganizer.API.Controllers
             {
                 return NotFound();
             }
+
+            taskboard.Cards = _ninjaOrganizerRepository.GetCardsForTaskboard(taskboard.Id).ToList();
 
             if (includeCards)
             {
@@ -112,12 +118,13 @@ namespace NinjaOrganizer.API.Controllers
         [HttpPatch("{id}")]
         public IActionResult PartiallyUpdateTaskboard(int id, [FromBody] TaskboardForUpdateDto patchDoc)
         {
-            throw new NotImplementedException("TaskboardController/patch");
+            return base.Content("W trakcie implementacji...");
         }
 
         [HttpPut("{id}")]
         public IActionResult UpdateTaskboard(int id,[FromBody] TaskboardForUpdateDto taskboard)
         {
+
             if (taskboard.Description == taskboard.Title)
             {
                 ModelState.AddModelError(

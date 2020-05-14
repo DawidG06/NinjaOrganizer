@@ -1,4 +1,5 @@
 ﻿using NinjaOrganizer.API.Entities;
+using NinjaOrganizer.API.Services;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -14,18 +15,15 @@ namespace NinjaOrganizer.API.Models
         public string LastName { get; set; }
         public string Username { get; set; }
 
-        //public int NumberOfTaskboards
-        //{
-        //    get
-        //    {
-        //        return Taskboards.Count;
-        //    }
-        //}
-        //public ICollection<Card> Taskboards { get; set; }
-        //       = new List<Card>();
+        public int NumberOfTaskboards
+        {
+            get
+            {
+                return Taskboards.Count;
+            }
+        }
 
-        public ICollection<TaskboardDto> Taskboards { get; set; }
-         = new List<TaskboardDto>();
+        public ICollection<TaskboardDto> Taskboards { get; set; } = new List<TaskboardDto>();
 
     }
 }

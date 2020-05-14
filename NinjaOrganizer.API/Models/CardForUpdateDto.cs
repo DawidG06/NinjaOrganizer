@@ -13,6 +13,7 @@ namespace NinjaOrganizer.API.Models
         [MaxLength(50)]
         public string Title { get; set; }
 
+        [Required(ErrorMessage = "You should provide a content value.")]
         [MaxLength(200)]
         public string Content { get; set; }
 

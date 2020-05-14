@@ -88,7 +88,6 @@ namespace NinjaOrganizer.API.Services
             catch(Exception ex)
             {
                 throw new Exception(ex.Message);
-                string ee = ex.Message;
             }
 
             return user;

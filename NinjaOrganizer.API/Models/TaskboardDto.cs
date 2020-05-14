@@ -21,8 +21,7 @@ namespace NinjaOrganizer.API.Models
         public DateTime Created { get; set; }
         public DateTime? Updated { get; set; }
 
-        public ICollection<CardDto> Cards { get; set; }
-          = new List<CardDto>();
+        public ICollection<CardDto> Cards { get; set; } = new List<CardDto>();
 
     }
 }

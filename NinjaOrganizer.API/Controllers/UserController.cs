@@ -64,12 +64,16 @@ namespace NinjaOrganizer.API.Controllers
             var expiresDate = token.ValidTo;
 
             // return basic user info and authentication token
+            var userToReturn = _mapper.Map<UserDto>(user);
+
             return Ok(new
             {
-                Id = user.Id,
-                Username = user.Username,
-                FirstName = user.FirstName,
-                LastName = user.LastName,
+                Id = userToReturn.Id,
+                FirstName = userToReturn.FirstName,
+                LastName = userToReturn.LastName,
+                UserName = userToReturn.Username,
+                NumberOfTaskboards = userToReturn.NumberOfTaskboards,
+                Taskboards = userToReturn.Taskboards,
                 Token = tokenString,
                 Expires = expiresDate
             });
@@ -81,10 +85,13 @@ namespace NinjaOrganizer.API.Controllers
         {
             var user = _mapper.Map<User>(userForRegisterDto);
 
+            var userToReturn = _mapper.Map<UserDto>(user);
+
             try
             {
                 _userService.Create(user, userForRegisterDto.Password);
-                return Ok();
+                return CreatedAtRoute("GetUser",
+                    new { id = userToReturn.Id }, userToReturn);
             }
             catch(Exception ex)
             {
@@ -97,14 +104,18 @@ namespace NinjaOrganizer.API.Controllers
         public IActionResult GetAll()
         {
             var users = _userService.GetAll();
+            foreach(var singleUser in users)
+                singleUser.Taskboards = _ninjaOrganizerRepository.GetTaskboardsForUser(singleUser.Id).ToList();
+
             var userDto = _mapper.Map<IList<UserDto>>(users);
             return Ok(userDto);
         }
 
-        [HttpGet("{id}")]
+        [HttpGet("{id}", Name = "GetUser")]
         public IActionResult GetById(int id)
         {
             var user = _userService.GetById(id);
+            user.Taskboards = _ninjaOrganizerRepository.GetTaskboardsForUser(user.Id).ToList();
             var model = _mapper.Map<UserDto>(user);
             return Ok(model);
         }
@@ -120,7 +131,7 @@ namespace NinjaOrganizer.API.Controllers
             {
                 // update user 
                 _userService.Update(user, userForUpdate.Password);
-                return Ok();
+                return NoContent();
             }
             catch (Exception ex)
             {
@@ -133,7 +144,7 @@ namespace NinjaOrganizer.API.Controllers
         public IActionResult Delete(int id)
         {
             _userService.Delete(id);
-            return Ok();
+            return NoContent();
         }
 
     }

@@ -26,7 +26,7 @@ namespace NinjaOrganizer.API.Controllers
             IMailService mailService, INinjaOrganizerRepository ninjaOrganizerRepository,
             IMapper mapper)
         {
-            _logger = logger ?? 
+            _logger = logger ??
                 throw new ArgumentNullException(nameof(logger));
             _mailService = mailService ??
                 throw new ArgumentNullException(nameof(mailService));
@@ -47,7 +47,7 @@ namespace NinjaOrganizer.API.Controllers
                         $"accessing cards.");
                     return NotFound();
                 }
-                
+
                 var cardsForTaskboard = _ninjaOrganizerRepository.GetCardsForTaskboard(taskboardId);
                 return Ok(_mapper.Map<IEnumerable<CardDto>>(cardsForTaskboard));
             }
@@ -58,7 +58,7 @@ namespace NinjaOrganizer.API.Controllers
             }
         }
 
-        [HttpGet("{id}", Name ="GetCard")]
+        [HttpGet("{id}", Name = "GetCard")]
         public IActionResult GetCard(int taskboardId, int id)
         {
             if (!_ninjaOrganizerRepository.TaskboardExists(taskboardId))
@@ -83,7 +83,7 @@ namespace NinjaOrganizer.API.Controllers
             if (card.Content == card.Title)
             {
                 ModelState.AddModelError(
-                    "Description", 
+                    "Description",
                     "The provided description should be different from the name.");
             }
 
@@ -97,12 +97,12 @@ namespace NinjaOrganizer.API.Controllers
                 return NotFound();
             }
 
-            
+
 
             var finalCard = _mapper.Map<Entities.Card>(card);
 
             _ninjaOrganizerRepository.AddCardForTaskboard(taskboardId, finalCard);
-            
+
             _ninjaOrganizerRepository.Save();
 
             var createdCardToReturn = _mapper
@@ -121,7 +121,7 @@ namespace NinjaOrganizer.API.Controllers
             if (card.Content == card.Title)
             {
                 ModelState.AddModelError(
-                    "Description", 
+                    "Description",
                     "The provided description should be different from the name.");
             }
 
@@ -147,7 +147,7 @@ namespace NinjaOrganizer.API.Controllers
             _ninjaOrganizerRepository.UpdateCardForTaskboard(taskboardId, cardEntity);
 
             _ninjaOrganizerRepository.Save();
-                
+
             return NoContent();
         }
 
@@ -155,48 +155,56 @@ namespace NinjaOrganizer.API.Controllers
         public IActionResult PartiallyUpdateCard(int taskboardId, int id,
             [FromBody] JsonPatchDocument<CardForUpdateDto> patchDoc)
         {
-            throw new NotImplementedException("CardsController/patch -sprawdzic czy dziala");
-            if (!_ninjaOrganizerRepository.TaskboardExists(taskboardId))
-            {
-                return NotFound();
-            }
+            return base.Content("W trakcie implementacji...");
 
-            var cardEntity = _ninjaOrganizerRepository
-                .GetCardForTaskboard(taskboardId, id);
-            if (cardEntity == null)
-            {
-                return NotFound();
-            }
+            // throw new NotImplementedException("CardsController/patch -sprawdzic czy dziala");
+            //if (!_ninjaOrganizerRepository.TaskboardExists(taskboardId))
+            //{
+            //    return NotFound();
+            //}
 
-            var cardToPatch = _mapper
-                .Map<CardForUpdateDto>(cardEntity);
+            //var cardEntity = _ninjaOrganizerRepository
+            //    .GetCardForTaskboard(taskboardId, id);
+            //if (cardEntity == null)
+            //{
+            //    return NotFound();
+            //}
 
-            patchDoc.ApplyTo(cardToPatch, ModelState);
+            //var cardToPatch = _mapper.Map<CardForUpdateDto>(cardEntity);
 
-            if (!ModelState.IsValid)
-            {
-                return BadRequest(ModelState);
-            }
+            //try
+            //{
+            //    patchDoc.ApplyTo(cardToPatch, ModelState);
+            //}
+            //catch (Exception ex)
+            //{
 
-            if (cardToPatch.Content == cardToPatch.Title)
-            {
-                ModelState.AddModelError(
-                    "Description", 
-                    "The provided description should be different from the name.");
-            }
+            //}
 
-            if (!TryValidateModel(cardToPatch))
-            {
-                return BadRequest(ModelState);
-            }
+            //if (!ModelState.IsValid)
+            //{
+            //    return BadRequest(ModelState);
+            //}
 
-            _mapper.Map(cardToPatch, cardEntity);
+            //if (cardToPatch.Content == cardToPatch.Title)
+            //{
+            //    ModelState.AddModelError(
+            //        "Description",
+            //        "The provided description should be different from the name.");
+            //}
 
-            _ninjaOrganizerRepository.UpdateCardForTaskboard(taskboardId, cardEntity);
+            //if (!TryValidateModel(cardToPatch))
+            //{
+            //    return BadRequest(ModelState);
+            //}
 
-            _ninjaOrganizerRepository.Save();
+            //_mapper.Map(cardToPatch, cardEntity);
 
-            return NoContent();
+            //_ninjaOrganizerRepository.UpdateCardForTaskboard(taskboardId, cardEntity);
+
+            //_ninjaOrganizerRepository.Save();
+
+            //return NoContent();
         }
 
         [HttpDelete("{id}")]
