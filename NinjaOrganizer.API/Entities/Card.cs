@@ -9,16 +9,16 @@ namespace NinjaOrganizer.API.Entities
 {
     public enum CardState
     {
-        ToDo = 0,
-        InProgress = 1,
-        Ready = 2
+        ToDo = 1,
+        InProgress = 2,
+        Ready = 3
     }
 
     public enum CardPriority
     {
-        Low = 0,
-        Medium = 1,
-        High = 2
+        Low = 1,
+        Medium = 2,
+        High = 3
     }
 
     public class Card

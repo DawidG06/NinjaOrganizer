@@ -88,7 +88,13 @@ namespace NinjaOrganizer.API.Controllers
 
             if (_ninjaOrganizerRepository.UserExist(userForRegisterDto.Username))
                 return BadRequest("Username exists");
-            
+
+            if (userForRegisterDto.Username == userForRegisterDto.Password)
+            {
+                ModelState.AddModelError(
+                    "Description",
+                    "The provided username should be different from the password.");
+            }
 
             var user = _mapper.Map<User>(userForRegisterDto);
 

@@ -152,59 +152,41 @@ namespace NinjaOrganizer.API.Controllers
         }
 
         [HttpPatch("{id}")]
-        public IActionResult PartiallyUpdateCard(int taskboardId, int id,
-            [FromBody] JsonPatchDocument<CardForUpdateDto> patchDoc)
+       // public IActionResult PartiallyUpdateCard(int taskboardId, int id, [FromBody] JsonPatchDocument<CardForUpdateDto> patchDoc)
+        public IActionResult PartiallyUpdateCard(int taskboardId, int id, [FromBody] CardDto cardForUpdate)
         {
-            return base.Content("W trakcie implementacji...");
+            var card = _ninjaOrganizerRepository.GetCardForTaskboard(taskboardId, id);
+            if (card == null)
+                return NotFound();
 
-            // throw new NotImplementedException("CardsController/patch -sprawdzic czy dziala");
-            //if (!_ninjaOrganizerRepository.TaskboardExists(taskboardId))
-            //{
-            //    return NotFound();
-            //}
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+            
 
-            //var cardEntity = _ninjaOrganizerRepository
-            //    .GetCardForTaskboard(taskboardId, id);
-            //if (cardEntity == null)
-            //{
-            //    return NotFound();
-            //}
+            if (cardForUpdate.Title != null)
+                card.Title = cardForUpdate.Title;
+            if (cardForUpdate.Content != null)
+                card.Content = cardForUpdate.Content;
+            if (cardForUpdate.State != card.State && (int)cardForUpdate.State > 0)
+                if (enumIsOk((int)cardForUpdate.State))
+                    card.State = cardForUpdate.State;
+                else return BadRequest("Wrong state of State");
+            if (cardForUpdate.Priority != card.Priority && (int)cardForUpdate.Priority > 0)
+                if (enumIsOk((int)cardForUpdate.Priority)) 
+                    card.Priority = cardForUpdate.Priority;
+                else return BadRequest("Wrong state of Priority");
 
-            //var cardToPatch = _mapper.Map<CardForUpdateDto>(cardEntity);
+            _ninjaOrganizerRepository.UpdateCardForTaskboard(taskboardId, card);
+            _ninjaOrganizerRepository.Save();
 
-            //try
-            //{
-            //    patchDoc.ApplyTo(cardToPatch, ModelState);
-            //}
-            //catch (Exception ex)
-            //{
+            return Ok();
+        }
 
-            //}
-
-            //if (!ModelState.IsValid)
-            //{
-            //    return BadRequest(ModelState);
-            //}
-
-            //if (cardToPatch.Content == cardToPatch.Title)
-            //{
-            //    ModelState.AddModelError(
-            //        "Description",
-            //        "The provided description should be different from the name.");
-            //}
-
-            //if (!TryValidateModel(cardToPatch))
-            //{
-            //    return BadRequest(ModelState);
-            //}
-
-            //_mapper.Map(cardToPatch, cardEntity);
-
-            //_ninjaOrganizerRepository.UpdateCardForTaskboard(taskboardId, cardEntity);
-
-            //_ninjaOrganizerRepository.Save();
-
-            //return NoContent();
+        private bool enumIsOk(int state)
+        {
+            if (state <= 0) return false;
+            if (state > 3) return false;
+            return true;
         }
 
         [HttpDelete("{id}")]
