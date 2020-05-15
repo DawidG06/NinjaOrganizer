@@ -69,15 +69,13 @@ namespace NinjaOrganizer.API.Services
             taskboard.Cards.Add(card);
         }
 
-        public void UpdateCardForTaskboard(int taskboardId, Card card)
+        public void UpdateCard(int taskboardId, Card card)
         {
-            // TODO sprawdzic
             _context.Cards.Update(card);
         }
 
         public void UpdateTaskboard(int taskboardId, Taskboard taskboard)
         {
-            //TODO sprawdzic
             _context.Taskboards.Update(taskboard);
         }
 

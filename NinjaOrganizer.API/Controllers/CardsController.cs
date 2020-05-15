@@ -144,7 +144,7 @@ namespace NinjaOrganizer.API.Controllers
 
             _mapper.Map(card, cardEntity);
 
-            _ninjaOrganizerRepository.UpdateCardForTaskboard(taskboardId, cardEntity);
+            _ninjaOrganizerRepository.UpdateCard(taskboardId, cardEntity);
 
             _ninjaOrganizerRepository.Save();
 
@@ -165,16 +165,16 @@ namespace NinjaOrganizer.API.Controllers
                 card.Title = cardForUpdate.Title;
             if (cardForUpdate.Content != null)
                 card.Content = cardForUpdate.Content;
-            if (cardForUpdate.State != card.State && (int)cardForUpdate.State > 0)
+            if (cardForUpdate.State != card.State && (int)cardForUpdate.State != 0)
                 if (enumIsOk((int)cardForUpdate.State))
                     card.State = cardForUpdate.State;
                 else return BadRequest("Wrong state of State");
-            if (cardForUpdate.Priority != card.Priority && (int)cardForUpdate.Priority > 0)
+            if (cardForUpdate.Priority != card.Priority && (int)cardForUpdate.Priority != 0)
                 if (enumIsOk((int)cardForUpdate.Priority)) 
                     card.Priority = cardForUpdate.Priority;
                 else return BadRequest("Wrong state of Priority");
 
-            _ninjaOrganizerRepository.UpdateCardForTaskboard(taskboardId, card);
+            _ninjaOrganizerRepository.UpdateCard(taskboardId, card);
             _ninjaOrganizerRepository.Save();
 
             return NoContent();

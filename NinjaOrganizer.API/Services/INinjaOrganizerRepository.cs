@@ -26,7 +26,7 @@ namespace NinjaOrganizer.API.Services
 
         void AddCardForTaskboard(int taskboardId, Card card);
 
-        void UpdateCardForTaskboard(int taskboardId, Card card);
+        void UpdateCard(int taskboardId, Card card);
 
         void UpdateTaskboard(int taskboardId, Taskboard taskboard);
 
