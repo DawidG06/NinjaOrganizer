@@ -22,6 +22,8 @@ namespace NinjaOrganizer.API.Services
 
         bool TaskboardExists(int taskboardId);
 
+        bool UserExist(string userName);
+
         void AddCardForTaskboard(int taskboardId, Card card);
 
         void UpdateCardForTaskboard(int taskboardId, Card card);

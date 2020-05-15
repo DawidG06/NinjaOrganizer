@@ -83,6 +83,13 @@ namespace NinjaOrganizer.API.Controllers
         [HttpPost("register")]
         public IActionResult Register([FromBody]UserForRegisterDto userForRegisterDto)
         {
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+
+            if (_ninjaOrganizerRepository.UserExist(userForRegisterDto.Username))
+                return BadRequest("Username exists");
+            
+
             var user = _mapper.Map<User>(userForRegisterDto);
 
             var userToReturn = _mapper.Map<UserDto>(user);
@@ -116,8 +123,8 @@ namespace NinjaOrganizer.API.Controllers
         {
             var user = _userService.GetById(id);
             user.Taskboards = _ninjaOrganizerRepository.GetTaskboardsForUser(user.Id).ToList();
-            var model = _mapper.Map<UserDto>(user);
-            return Ok(model);
+            var userToReturn = _mapper.Map<UserDto>(user);
+            return Ok(userToReturn);
         }
 
         [HttpPut("{id}")]

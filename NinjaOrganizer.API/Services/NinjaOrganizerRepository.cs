@@ -58,6 +58,11 @@ namespace NinjaOrganizer.API.Services
             return _context.Taskboards.Any(c => c.Id == taskboardId);
         }
 
+        public bool UserExist(string userName)
+        {
+            return _context.Users.Any(u => u.Username == userName);
+        }
+
         public void AddCardForTaskboard(int taskboardId, Card card)
         {
             var taskboard = GetTaskboard(taskboardId, false);
@@ -111,5 +116,6 @@ namespace NinjaOrganizer.API.Services
         {
             _context.Taskboards.Remove(taskboard);
         }
+
     }
 }
