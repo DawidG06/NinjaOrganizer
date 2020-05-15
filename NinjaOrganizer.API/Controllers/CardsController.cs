@@ -152,7 +152,6 @@ namespace NinjaOrganizer.API.Controllers
         }
 
         [HttpPatch("{id}")]
-       // public IActionResult PartiallyUpdateCard(int taskboardId, int id, [FromBody] JsonPatchDocument<CardForUpdateDto> patchDoc)
         public IActionResult PartiallyUpdateCard(int taskboardId, int id, [FromBody] CardDto cardForUpdate)
         {
             var card = _ninjaOrganizerRepository.GetCardForTaskboard(taskboardId, id);
@@ -162,7 +161,6 @@ namespace NinjaOrganizer.API.Controllers
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
             
-
             if (cardForUpdate.Title != null)
                 card.Title = cardForUpdate.Title;
             if (cardForUpdate.Content != null)
@@ -179,7 +177,7 @@ namespace NinjaOrganizer.API.Controllers
             _ninjaOrganizerRepository.UpdateCardForTaskboard(taskboardId, card);
             _ninjaOrganizerRepository.Save();
 
-            return Ok();
+            return NoContent();
         }
 
         private bool enumIsOk(int state)

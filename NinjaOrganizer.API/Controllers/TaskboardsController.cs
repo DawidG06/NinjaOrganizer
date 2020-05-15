@@ -31,31 +31,12 @@ namespace NinjaOrganizer.API.Controllers
         [HttpGet]
         public IActionResult GetTaskboards(int userId)
         {
-            //test
             var taskboardsForUser = _ninjaOrganizerRepository.GetTaskboardsForUser(userId);
 
             foreach(var taskboard in taskboardsForUser)
                 taskboard.Cards = _ninjaOrganizerRepository.GetCardsForTaskboard(taskboard.Id).ToList();
 
             return Ok(_mapper.Map<IEnumerable<TaskboardWithoutCardsDto>>(taskboardsForUser));
-            //test <-
-
-
-            var taskboardEntities = _ninjaOrganizerRepository.GetTaskboards();
-
-            //var results = new List<TaskboardWithoutCardsDto>();
-
-            //foreach (var taskboardEntity in taskboardEntities)
-            //{
-            //    results.Add(new TaskboardWithoutCardsDto
-            //    {
-            //        Id = taskboardEntity.Id,
-            //        Description = taskboardEntity.Description,
-            //        Name = taskboardEntity.Name
-            //    });
-            //}
-
-            return Ok(_mapper.Map<IEnumerable<TaskboardWithoutCardsDto>>(taskboardEntities));
         }
 
         [HttpGet("{id}", Name = "GetTaskboard")]
@@ -116,9 +97,25 @@ namespace NinjaOrganizer.API.Controllers
         }
 
         [HttpPatch("{id}")]
-        public IActionResult PartiallyUpdateTaskboard(int id, [FromBody] TaskboardForUpdateDto patchDoc)
+        public IActionResult PartiallyUpdateTaskboard(int id, [FromBody] TaskboardDto taskboardForUpdate)
         {
-            return base.Content("W trakcie implementacji...");
+            var taskboard = _ninjaOrganizerRepository.GetTaskboard(id,false);
+            if (taskboard == null)
+                return NotFound();
+
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+
+            if (taskboardForUpdate.Title != null)
+                taskboard.Title = taskboardForUpdate.Title;
+            if (taskboardForUpdate.Description != null)
+                taskboard.Description = taskboardForUpdate.Description;
+
+            _ninjaOrganizerRepository.UpdateTaskboard(id, taskboard);
+            _ninjaOrganizerRepository.Save();
+
+            return NoContent();
+            //return base.Content("W trakcie implementacji...");
         }
 
         [HttpPut("{id}")]
