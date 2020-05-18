@@ -47,6 +47,13 @@ namespace NinjaOrganizer.API.Migrations
                     b.HasIndex("TaskboardId");
 
                     b.ToTable("Cards");
+
+                    b.HasData(
+                        new { Id = 1, Content = "opis zadanie 1 tablicy 1", Created = new DateTime(2020, 5, 16, 13, 47, 19, 127, DateTimeKind.Local), Priority = 1, State = 1, TaskboardId = 1, Title = "zadanie 1 tablicy 1" },
+                        new { Id = 2, Content = "opis zadanie 2 tablicy 1", Created = new DateTime(2020, 5, 16, 13, 47, 19, 129, DateTimeKind.Local), Priority = 1, State = 2, TaskboardId = 1, Title = "zadanie 2 tablicy 1" },
+                        new { Id = 3, Content = "opis zadanie 1 tablicy 2", Created = new DateTime(2020, 5, 15, 13, 47, 19, 129, DateTimeKind.Local), Priority = 1, State = 1, TaskboardId = 2, Title = "zadanie 1 tablicy 2", Updated = new DateTime(2020, 5, 16, 13, 47, 19, 129, DateTimeKind.Local) },
+                        new { Id = 4, Content = "opis zadanie 2 tablicy 2", Created = new DateTime(2020, 5, 16, 13, 47, 19, 129, DateTimeKind.Local), Priority = 3, State = 1, TaskboardId = 2, Title = "zadanie 2 tablicy 2" }
+                    );
                 });
 
             modelBuilder.Entity("NinjaOrganizer.API.Entities.Taskboard", b =>
@@ -73,6 +80,13 @@ namespace NinjaOrganizer.API.Migrations
                     b.HasIndex("UserId");
 
                     b.ToTable("Taskboards");
+
+                    b.HasData(
+                        new { Id = 1, Created = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), Description = "opis tablicy pierwszej usera 1", Title = "Tablica 1 usera 1", UserId = 1 },
+                        new { Id = 2, Created = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), Description = "opis tablicy drugiej usera 1", Title = "Tablica 2 usera 1", UserId = 1 },
+                        new { Id = 3, Created = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), Description = "opis tablicy pierwszej usera 2", Title = "tablica 1 usera 2", UserId = 2 },
+                        new { Id = 4, Created = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), Description = "opis tablicy pierwszej usera 2", Title = "Tablica 2 usera 2", UserId = 2 }
+                    );
                 });
 
             modelBuilder.Entity("NinjaOrganizer.API.Entities.User", b =>
@@ -94,6 +108,11 @@ namespace NinjaOrganizer.API.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Users");
+
+                    b.HasData(
+                        new { Id = 1, FirstName = "First name of user 1", LastName = "Last name os user 1", Username = "User 1" },
+                        new { Id = 2, FirstName = "First name os user 2", LastName = "Last name of user 2", Username = "User 2" }
+                    );
                 });
 
             modelBuilder.Entity("NinjaOrganizer.API.Entities.Card", b =>

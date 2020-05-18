@@ -56,7 +56,7 @@ namespace NinjaOrganizer.API.Controllers
                 {
                     new Claim(ClaimTypes.Name, user.Id.ToString())
                 }),
-                Expires = DateTime.UtcNow.AddDays(7), //TODO sprawdzic czy dziala i zwalidowac
+                Expires = DateTime.UtcNow.AddHours(1), //.AddDays(7), //TODO sprawdzic czy dziala
                 SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature)
             };
             var token = tokenHandler.CreateToken(tokenDescriptor);
@@ -118,7 +118,9 @@ namespace NinjaOrganizer.API.Controllers
         {
             var users = _userService.GetAll();
             foreach(var singleUser in users)
+            {
                 singleUser.Taskboards = _ninjaOrganizerRepository.GetTaskboardsForUser(singleUser.Id).ToList();
+            }
 
             var userDto = _mapper.Map<IList<UserDto>>(users);
             return Ok(userDto);

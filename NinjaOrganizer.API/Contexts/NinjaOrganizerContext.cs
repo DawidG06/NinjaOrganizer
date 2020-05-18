@@ -19,7 +19,8 @@ namespace NinjaOrganizer.API.Contexts
         public NinjaOrganizerContext(DbContextOptions<NinjaOrganizerContext> options)
            : base(options)
         {
-              //Database.EnsureCreated();
+            //  Database.EnsureCreated();
+            
         }
 
         
@@ -30,11 +31,17 @@ namespace NinjaOrganizer.API.Contexts
                 new User()
                 {
                     Id = 1,
-                    Username = "Username1",
-                    FirstName = "First name1",
-                    LastName = "Last name1"
-
-                }
+                    Username = "User 1",
+                    FirstName = "First name of user 1",
+                    LastName = "Last name os user 1"
+                },
+                 new User()
+                 {
+                     Id = 2,
+                     Username = "User 2",
+                     FirstName = "First name os user 2",
+                     LastName = "Last name of user 2"
+                 }
                 );
 
             modelBuilder.Entity<Taskboard>()
@@ -42,24 +49,33 @@ namespace NinjaOrganizer.API.Contexts
                  new Taskboard()
                  {
                      Id = 1,
-                     Title = "Tablica 1",
-                     Description = "opis tablicy pierwszej",
+                     Title = "Tablica 1 usera 1",
+                     Description = "opis tablicy pierwszej usera 1",
                      UserId = 1
+
                  },
                  new Taskboard()
                  {
                      Id = 2,
-                     Title = "Zakupy",
-                     Description = "Lista zakupow",
+                     Title = "Tablica 2 usera 1",
+                     Description = "opis tablicy drugiej usera 1",
                      UserId = 1
                  },
                  new Taskboard()
                  {
                      Id = 3,
-                     Title = "Remont",
-                     Description = "opis remontu",
-                     UserId = 1
+                     Title = "tablica 1 usera 2",
+                     Description = "opis tablicy pierwszej usera 2",
+                     UserId = 2
+                 },
+                 new Taskboard()
+                 {
+                     Id = 4,
+                     Title = "Tablica 2 usera 2",
+                     Description = "opis tablicy pierwszej usera 2",
+                     UserId = 2
                  });
+
 
             modelBuilder.Entity<Card>()
               .HasData(
@@ -87,8 +103,8 @@ namespace NinjaOrganizer.API.Contexts
                 {
                     Id = 3,
                     TaskboardId = 2,
-                    Title = "lody",
-                    Content = "owocowe lub karmelowe",
+                    Title = "zadanie 1 tablicy 2",
+                    Content = "opis zadanie 1 tablicy 2",
                     State = CardState.ToDo,
                     Priority = CardPriority.Low,
                     Created = DateTime.Now.AddDays(-1),
@@ -98,20 +114,10 @@ namespace NinjaOrganizer.API.Contexts
                 {
                     Id = 4,
                     TaskboardId = 2,
-                    Title = "czekolada",
-                    Content = "mleczna biala",
+                    Title = "zadanie 2 tablicy 2",
+                    Content = "opis zadanie 2 tablicy 2",
                     State = CardState.ToDo,
                     Priority = CardPriority.High,
-                    Created = DateTime.Now
-                },
-                new Card()
-                {
-                    Id = 5,
-                    TaskboardId = 3,
-                    Title = "pomalowac sciany",
-                    Content = "kolor farby bezowy lub jasnoniebieski",
-                    State = CardState.InProgress,
-                    Priority = CardPriority.Medium,
                     Created = DateTime.Now
                 }
                 );

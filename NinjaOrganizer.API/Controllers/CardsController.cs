@@ -18,18 +18,18 @@ namespace NinjaOrganizer.API.Controllers
     public class CardsController : ControllerBase
     {
         private readonly ILogger<CardsController> _logger;
-        private readonly IMailService _mailService;
+        //private readonly IMailService _mailService;
         private readonly INinjaOrganizerRepository _ninjaOrganizerRepository;
         private readonly IMapper _mapper;
 
         public CardsController(ILogger<CardsController> logger,
-            IMailService mailService, INinjaOrganizerRepository ninjaOrganizerRepository,
+             INinjaOrganizerRepository ninjaOrganizerRepository,
             IMapper mapper)
         {
             _logger = logger ??
                 throw new ArgumentNullException(nameof(logger));
-            _mailService = mailService ??
-                throw new ArgumentNullException(nameof(mailService));
+           // _mailService = mailService ??
+            //    throw new ArgumentNullException(nameof(mailService));
             _ninjaOrganizerRepository = ninjaOrganizerRepository ??
                 throw new ArgumentNullException(nameof(ninjaOrganizerRepository));
             _mapper = mapper ??
@@ -206,8 +206,8 @@ namespace NinjaOrganizer.API.Controllers
 
             _ninjaOrganizerRepository.Save();
 
-            _mailService.Send("Card deleted.",
-                    $"Card {cardEntity.Title} with id {cardEntity.Id} was deleted.");
+            //_mailService.Send("Card deleted.",
+                   // $"Card {cardEntity.Title} with id {cardEntity.Id} was deleted.");
 
             return NoContent();
         }

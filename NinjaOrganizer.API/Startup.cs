@@ -29,8 +29,8 @@ namespace NinjaOrganizer.API
             _configuration = configuration ?? 
                 throw new ArgumentNullException(nameof(configuration));
         }
-        // This method gets called by the runtime. Use this method to add services to the container.
-        // For more information on how to configure your application, visit https://go.microsoft.com/fwlink/?LinkID=398940
+        
+
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddMvc()
@@ -38,20 +38,13 @@ namespace NinjaOrganizer.API
                 {
                     o.OutputFormatters.Add(new XmlDataContractSerializerOutputFormatter());
                 });
-            //.AddJsonOptions(o =>
-            //{
-            //    if (o.SerializerSettings.ContractResolver != null)
-            //    {
-            //        var castedResolver = o.SerializerSettings.ContractResolver
-            //                               as DefaultContractResolver;
-            //        castedResolver.NamingStrategy = null;
-            //    }
-            //});
-#if DEBUG
-            services.AddTransient<IMailService, LocalMailService>();
-#else
-            services.AddTransient<IMailService, CloudMailService>();
-#endif
+
+
+//#if DEBUG
+//            services.AddTransient<IMailService, LocalMailService>();
+//#else
+//            services.AddTransient<IMailService, CloudMailService>();
+//#endif
             var connectionString = _configuration["connectionStrings:NinjaOrganizerDBConnectionString"];
             services.AddDbContext<NinjaOrganizerContext>(o =>
             {
@@ -63,20 +56,19 @@ namespace NinjaOrganizer.API
             services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 
 
-            // configure strongly typed settings objects
-            var appSettingsSection = _configuration.GetSection("AppSettings");
-            services.Configure<AppSettings>(appSettingsSection);
+            var appSettingsFromFile = _configuration.GetSection("AppSettings");
+            services.Configure<AppSettings>(appSettingsFromFile);
             // configure jwt authentication
-            var appSettings = appSettingsSection.Get<AppSettings>();
+            var appSettings = appSettingsFromFile.Get<AppSettings>();
             var key = Encoding.ASCII.GetBytes(appSettings.Secret);
-            services.AddAuthentication(x =>
+            services.AddAuthentication(confOptions =>
             {
-                x.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
-                x.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+                confOptions.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+                confOptions.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
             })
-            .AddJwtBearer(x =>
+            .AddJwtBearer(confOptions =>
             {
-                x.Events = new JwtBearerEvents
+                confOptions.Events = new JwtBearerEvents
                 {
                     OnTokenValidated = context =>
                     {
@@ -93,9 +85,9 @@ namespace NinjaOrganizer.API
                     }
                    
                 };
-                x.RequireHttpsMetadata = false;
-                x.SaveToken = true;
-                x.TokenValidationParameters = new TokenValidationParameters
+                confOptions.RequireHttpsMetadata = false;
+                confOptions.SaveToken = true;
+                confOptions.TokenValidationParameters = new TokenValidationParameters
                 {
                     ValidateIssuerSigningKey = true,
                     IssuerSigningKey = new SymmetricSecurityKey(key),
@@ -104,24 +96,20 @@ namespace NinjaOrganizer.API
                 };
             });
 
-            // configure DI for application services
+
             services.AddScoped<IUserService, UserService>();
-            
             services.AddCors();
         }
 
-        // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
+        
         public void Configure(IApplicationBuilder app, IHostingEnvironment env)
         {
             
             if (env.IsDevelopment())
-            {
                 app.UseDeveloperExceptionPage();
-            }
             else
-            {
                 app.UseExceptionHandler();
-            }
+            
 
             app.UseCors(c => c
             .AllowAnyOrigin()
@@ -129,11 +117,8 @@ namespace NinjaOrganizer.API
             .AllowAnyHeader());
 
             app.UseAuthentication();
-             //app.UseAuthorization();
-            
 
             app.UseStatusCodePages();
-
             app.UseMvc();             
         }
     }

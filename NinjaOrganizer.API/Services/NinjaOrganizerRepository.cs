@@ -50,7 +50,12 @@ namespace NinjaOrganizer.API.Services
 
         public IEnumerable<Taskboard> GetTaskboardsForUser(int userId)
         {
-            return _context.Taskboards.Where(u => u.UserId == userId).ToList();
+            var taskboards = _context.Taskboards.Where(u => u.UserId == userId).ToList();
+
+            foreach (var taskboard in taskboards)
+                taskboard.Cards = _context.Cards.Where(c => c.TaskboardId == taskboard.Id).ToList();
+
+            return taskboards;
         }
 
         public bool TaskboardExists(int taskboardId)

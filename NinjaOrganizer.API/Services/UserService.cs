@@ -39,8 +39,6 @@ namespace NinjaOrganizer.API.Services
 
         private bool checkPasswordHash(string password, byte[] storedHash, byte[] storedSalt)
         {
-            // TODO sprawdzic password
-
             if (storedHash.Length != 64 || storedSalt.Length != 128)
                 throw new ArgumentException("invalid lenght", "checkpassword");
 
@@ -54,25 +52,9 @@ namespace NinjaOrganizer.API.Services
             return true;
         }
 
-        private byte[] createPasswordHash(string password, out byte[] passwordSalt)
-        {
-            // TODO sprawdzic czy haslo jest puste
-
-
-            var hash = new byte[64];
-
-            using (var hmac = new HMACSHA512())
-            {
-                passwordSalt = hmac.Key;
-                hash = hmac.ComputeHash(Encoding.UTF8.GetBytes(password));
-            }
-
-            return hash;
-        }
-
+     
         public User Create(User user, string password)
         {
-            // TODO sprawdzic czy jest wpisane haslo i czy uzytkownik juz istnieje
 
             byte[] passwordHash, passwordSalt;
             passwordHash = createPasswordHash(password, out passwordSalt);
@@ -93,6 +75,19 @@ namespace NinjaOrganizer.API.Services
             return user;
         }
 
+        private byte[] createPasswordHash(string password, out byte[] passwordSalt)
+        {
+            var hash = new byte[64];
+
+            using (var hmac = new HMACSHA512())
+            {
+                passwordSalt = hmac.Key;
+                hash = hmac.ComputeHash(Encoding.UTF8.GetBytes(password));
+            }
+
+            return hash;
+        }
+
         public void Delete(int id)
         {
             var user = _context.Users.Find(id);
@@ -108,6 +103,11 @@ namespace NinjaOrganizer.API.Services
             return _context.Users;
         }
 
+        /// <summary>
+        /// Opis funkcji
+        /// </summary>
+        /// <param name="id">opis parametru</param>
+        /// <returns>opis zwracanego typu</returns>
         public User GetById(int id)
         {
             return _context.Users.Find(id);
