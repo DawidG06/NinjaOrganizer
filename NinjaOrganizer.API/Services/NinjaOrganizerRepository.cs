@@ -56,6 +56,7 @@ namespace NinjaOrganizer.API.Services
                 taskboard.Cards = _context.Cards.Where(c => c.TaskboardId == taskboard.Id).ToList();
 
             return taskboards;
+            
         }
 
         public bool TaskboardExists(int taskboardId)

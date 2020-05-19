@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.EntityFrameworkCore.Query.ExpressionVisitors.Internal;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -15,6 +16,15 @@ namespace NinjaOrganizer.API.Models
             get
             {
                 return Cards.Count;
+            }
+        }
+
+        public int NumberOfNotReadyCards
+        {
+            get
+            {
+                int result = Cards.Where(c => c.State != Entities.CardState.Ready).Count();
+                return result;
             }
         }
 
