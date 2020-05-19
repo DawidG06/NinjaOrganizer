@@ -41,7 +41,7 @@ namespace NinjaOrganizer.API
                     }
                 }
 
-                
+
                 host.Run(); // run the web app
             }
             catch (Exception ex)
@@ -58,6 +58,14 @@ namespace NinjaOrganizer.API
         public static IWebHostBuilder CreateWebHostBuilder(string[] args) =>
             WebHost.CreateDefaultBuilder(args)
                 .UseStartup<Startup>()
+                .UseNLog()
+           .UseKestrel();
+
+        /*
+          public static IWebHostBuilder CreateWebHostBuilder(string[] args) =>
+            WebHost.CreateDefaultBuilder(args)
+                .UseStartup<Startup>()
                 .UseNLog();
+          */
     }
 }

@@ -17,6 +17,7 @@ using System.Text;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using NinjaOrganizer.API.Helpers;
+using Microsoft.Extensions.Options;
 
 namespace NinjaOrganizer.API
 {
@@ -98,7 +99,14 @@ namespace NinjaOrganizer.API
 
 
             services.AddScoped<IUserService, UserService>();
-            services.AddCors();
+            services.AddCors(o =>
+            {
+                o.AddPolicy("AllowAll",
+                    p => p.AllowAnyOrigin()
+                    .AllowAnyHeader()
+                    .AllowAnyMethod()
+                    .AllowCredentials());
+            });
         }
 
         
@@ -108,13 +116,20 @@ namespace NinjaOrganizer.API
             if (env.IsDevelopment())
                 app.UseDeveloperExceptionPage();
             else
-                app.UseExceptionHandler();
-            
+            {
+                // app.UseExceptionHandler();
+                app.UseExceptionHandler("/error");
+              
+            }
+               
 
+            /*
             app.UseCors(c => c
-            .AllowAnyOrigin()
-            .AllowAnyMethod()
-            .AllowAnyHeader());
+             .AllowAnyOrigin()
+             .AllowAnyMethod()
+             .AllowAnyHeader());
+             */
+            app.UseCors("AllowAll");
 
             app.UseAuthentication();
 
