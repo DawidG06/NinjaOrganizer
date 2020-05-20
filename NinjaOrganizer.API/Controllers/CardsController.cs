@@ -51,8 +51,6 @@ namespace NinjaOrganizer.API.Controllers
             {
                 if (!_ninjaOrganizerRepository.TaskboardExists(taskboardId))
                 {
-                    _logger.LogInformation($"Taskboard with id {taskboardId} wasn't found when " +
-                        $"accessing cards.");
                     return NotFound();
                 }
 

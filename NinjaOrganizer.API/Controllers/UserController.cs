@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Server.Kestrel.Core.Internal.Http;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using NinjaOrganizer.API.Entities;
@@ -31,8 +32,9 @@ namespace NinjaOrganizer.API.Controllers
         private readonly IMapper _mapper;
         private readonly IUserService _userService;
         private readonly AppSettings _appSettings;
+        private readonly ILogger<UserController> _logger;
 
-        public UserController(INinjaOrganizerRepository ninjaOrganizerRepository, IMapper mapper, IUserService userService, IOptions<AppSettings> appSettings)
+        public UserController(INinjaOrganizerRepository ninjaOrganizerRepository, IMapper mapper, IUserService userService, IOptions<AppSettings> appSettings, ILogger<UserController> logger)
         {
             _ninjaOrganizerRepository = ninjaOrganizerRepository ??
                throw new ArgumentNullException(nameof(ninjaOrganizerRepository));
@@ -40,6 +42,7 @@ namespace NinjaOrganizer.API.Controllers
                 throw new ArgumentNullException(nameof(mapper));
             _userService = userService ?? throw new ArgumentNullException(nameof(userService));
             _appSettings = appSettings.Value;
+            _logger = logger ?? throw new ArgumentNullException(nameof(logger));
         }
 
         /// <summary>
@@ -77,8 +80,8 @@ namespace NinjaOrganizer.API.Controllers
             }
             catch (Exception ex)
             {
+                _logger.LogCritical("Exeption while user register.",ex);
                 return BadRequest(new { message = ex.Message });
-                // TODO log
             }
 
         }
@@ -185,7 +188,7 @@ namespace NinjaOrganizer.API.Controllers
             }
             catch (Exception ex)
             {
-                // return error message if exception
+                _logger.LogCritical("Exception while user update.", ex);
                 return BadRequest(new { message = ex.Message });
             }
         }

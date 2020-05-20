@@ -1,4 +1,5 @@
-﻿using NinjaOrganizer.API.Contexts;
+﻿using Microsoft.Extensions.Logging;
+using NinjaOrganizer.API.Contexts;
 using NinjaOrganizer.API.Entities;
 using System;
 using System.Collections.Generic;
@@ -16,10 +17,12 @@ namespace NinjaOrganizer.API.Services
     public class UserService : IUserService
     {
         private readonly NinjaOrganizerContext _context;
+        private readonly ILogger<UserService> _logger;
 
-        public UserService(NinjaOrganizerContext context)
+        public UserService(NinjaOrganizerContext context, ILogger<UserService> logger)
         {
             _context = context ?? throw new ArgumentNullException(nameof(context));
+            _logger = logger ?? throw new ArgumentNullException(nameof(logger));
         }
 
         public User Create(User user, string password)
@@ -40,8 +43,8 @@ namespace NinjaOrganizer.API.Services
             }
             catch (Exception ex)
             {
+                _logger.LogCritical("Exception while SaveChanges",ex);
                 throw new Exception(ex.Message);
-                //TODO add log
             }
 
             // created succefful
