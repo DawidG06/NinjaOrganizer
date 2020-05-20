@@ -19,7 +19,7 @@ namespace NinjaOrganizer.API.Contexts
         public NinjaOrganizerContext(DbContextOptions<NinjaOrganizerContext> options)
            : base(options)
         {
-            //  Database.EnsureCreated();
+              //Database.EnsureCreated();
             
         }
 

@@ -2,7 +2,6 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
-using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using NinjaOrganizer.API.Contexts;
 
@@ -15,15 +14,12 @@ namespace NinjaOrganizer.API.Migrations
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "2.1.14-servicing-32113")
-                .HasAnnotation("Relational:MaxIdentifierLength", 128)
-                .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+                .HasAnnotation("ProductVersion", "2.1.14-servicing-32113");
 
             modelBuilder.Entity("NinjaOrganizer.API.Entities.Card", b =>
                 {
                     b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+                        .ValueGeneratedOnAdd();
 
                     b.Property<string>("Content")
                         .HasMaxLength(200);
@@ -49,18 +45,17 @@ namespace NinjaOrganizer.API.Migrations
                     b.ToTable("Cards");
 
                     b.HasData(
-                        new { Id = 1, Content = "opis zadanie 1 tablicy 1", Created = new DateTime(2020, 5, 16, 13, 47, 19, 127, DateTimeKind.Local), Priority = 1, State = 1, TaskboardId = 1, Title = "zadanie 1 tablicy 1" },
-                        new { Id = 2, Content = "opis zadanie 2 tablicy 1", Created = new DateTime(2020, 5, 16, 13, 47, 19, 129, DateTimeKind.Local), Priority = 1, State = 2, TaskboardId = 1, Title = "zadanie 2 tablicy 1" },
-                        new { Id = 3, Content = "opis zadanie 1 tablicy 2", Created = new DateTime(2020, 5, 15, 13, 47, 19, 129, DateTimeKind.Local), Priority = 1, State = 1, TaskboardId = 2, Title = "zadanie 1 tablicy 2", Updated = new DateTime(2020, 5, 16, 13, 47, 19, 129, DateTimeKind.Local) },
-                        new { Id = 4, Content = "opis zadanie 2 tablicy 2", Created = new DateTime(2020, 5, 16, 13, 47, 19, 129, DateTimeKind.Local), Priority = 3, State = 1, TaskboardId = 2, Title = "zadanie 2 tablicy 2" }
+                        new { Id = 1, Content = "opis zadanie 1 tablicy 1", Created = new DateTime(2020, 5, 19, 21, 36, 35, 783, DateTimeKind.Local), Priority = 1, State = 1, TaskboardId = 1, Title = "zadanie 1 tablicy 1" },
+                        new { Id = 2, Content = "opis zadanie 2 tablicy 1", Created = new DateTime(2020, 5, 19, 21, 36, 35, 785, DateTimeKind.Local), Priority = 1, State = 2, TaskboardId = 1, Title = "zadanie 2 tablicy 1" },
+                        new { Id = 3, Content = "opis zadanie 1 tablicy 2", Created = new DateTime(2020, 5, 18, 21, 36, 35, 785, DateTimeKind.Local), Priority = 1, State = 1, TaskboardId = 2, Title = "zadanie 1 tablicy 2", Updated = new DateTime(2020, 5, 19, 21, 36, 35, 785, DateTimeKind.Local) },
+                        new { Id = 4, Content = "opis zadanie 2 tablicy 2", Created = new DateTime(2020, 5, 19, 21, 36, 35, 786, DateTimeKind.Local), Priority = 3, State = 1, TaskboardId = 2, Title = "zadanie 2 tablicy 2" }
                     );
                 });
 
             modelBuilder.Entity("NinjaOrganizer.API.Entities.Taskboard", b =>
                 {
                     b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+                        .ValueGeneratedOnAdd();
 
                     b.Property<DateTime>("Created");
 
@@ -92,8 +87,7 @@ namespace NinjaOrganizer.API.Migrations
             modelBuilder.Entity("NinjaOrganizer.API.Entities.User", b =>
                 {
                     b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+                        .ValueGeneratedOnAdd();
 
                     b.Property<string>("FirstName");
 

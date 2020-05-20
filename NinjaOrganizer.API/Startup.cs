@@ -18,6 +18,7 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using NinjaOrganizer.API.Helpers;
 using Microsoft.Extensions.Options;
+using System.Data.SqlClient;
 
 namespace NinjaOrganizer.API
 {
@@ -27,10 +28,11 @@ namespace NinjaOrganizer.API
 
         public Startup(IConfiguration configuration)
         {
-            _configuration = configuration ?? 
+            _configuration = configuration ??
                 throw new ArgumentNullException(nameof(configuration));
+
         }
-        
+
 
         public void ConfigureServices(IServiceCollection services)
         {
@@ -41,16 +43,33 @@ namespace NinjaOrganizer.API
                 });
 
 
-//#if DEBUG
-//            services.AddTransient<IMailService, LocalMailService>();
-//#else
-//            services.AddTransient<IMailService, CloudMailService>();
-//#endif
+            //#if DEBUG
+            //            services.AddTransient<IMailService, LocalMailService>();
+            //#else
+            //            services.AddTransient<IMailService, CloudMailService>();
+            //#endif
             var connectionString = _configuration["connectionStrings:NinjaOrganizerDBConnectionString"];
-            services.AddDbContext<NinjaOrganizerContext>(o =>
+           // services.AddDbContext<NinjaOrganizerContext>(o =>
+            //{
+                // o.UseSqlServer(connectionString);
+
+               // var connectionStrBuilder = new SqlConnectionStringBuilder { DataSource = "MyDb.db" };
+             //   var connectionStr = connectionStrBuilder.ToString();
+              //  var connection = new SqlConnection(connectionStr);
+              //  o.UseSqlite(connection);
+                
+           // });
+
+            services.AddEntityFrameworkSqlite().AddDbContext<NinjaOrganizerContext>(o =>
             {
-                o.UseSqlServer(connectionString);
+                //o.UseSqlite("Filename=MyDatabase.db"); //ok dziala
+
+               // o.UseSqlite("Filename=MYSQLCONNSTR_localdb");
+               string conStr = "Data Source=D:\\home\\site\\wwwroot\\MyDatabase.db";
+                o.UseSqlite(conStr);
+
             });
+
 
             services.AddScoped<INinjaOrganizerRepository, NinjaOrganizerRepository>();
 
@@ -84,7 +103,7 @@ namespace NinjaOrganizer.API
 
                         return Task.CompletedTask;
                     }
-                   
+
                 };
                 confOptions.RequireHttpsMetadata = false;
                 confOptions.SaveToken = true;
@@ -109,19 +128,19 @@ namespace NinjaOrganizer.API
             });
         }
 
-        
+
         public void Configure(IApplicationBuilder app, IHostingEnvironment env)
         {
-            
+
             if (env.IsDevelopment())
                 app.UseDeveloperExceptionPage();
             else
             {
                 // app.UseExceptionHandler();
                 app.UseExceptionHandler("/error");
-              
+
             }
-               
+
 
             /*
             app.UseCors(c => c
@@ -134,7 +153,7 @@ namespace NinjaOrganizer.API
             app.UseAuthentication();
 
             app.UseStatusCodePages();
-            app.UseMvc();             
+            app.UseMvc();
         }
     }
 }
