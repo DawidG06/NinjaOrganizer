@@ -12,8 +12,7 @@ namespace NinjaOrganizer.API.Profiles
         {
             CreateMap<Entities.Card, Models.CardDto>();
             CreateMap<Models.CardForCreationDto, Entities.Card>();
-            CreateMap<Models.CardForUpdateDto, Entities.Card>()
-                .ReverseMap();
+            CreateMap<Models.CardForUpdateDto, Entities.Card>().ReverseMap();
 
         }
     }

@@ -7,6 +7,9 @@ using System.Threading.Tasks;
 
 namespace NinjaOrganizer.API.Controllers
 {
+    /// <summary>
+    /// Class only for database test.
+    /// </summary>
     [ApiController]
     [Route("api/testdatabase")]
     public class DummyController : ControllerBase

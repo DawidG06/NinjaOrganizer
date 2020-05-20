@@ -42,39 +42,17 @@ namespace NinjaOrganizer.API
                     o.OutputFormatters.Add(new XmlDataContractSerializerOutputFormatter());
                 });
 
-
-            //#if DEBUG
-            //            services.AddTransient<IMailService, LocalMailService>();
-            //#else
-            //            services.AddTransient<IMailService, CloudMailService>();
-            //#endif
-            var connectionString = _configuration["connectionStrings:NinjaOrganizerDBConnectionString"];
-           // services.AddDbContext<NinjaOrganizerContext>(o =>
-            //{
-                // o.UseSqlServer(connectionString);
-
-               // var connectionStrBuilder = new SqlConnectionStringBuilder { DataSource = "MyDb.db" };
-             //   var connectionStr = connectionStrBuilder.ToString();
-              //  var connection = new SqlConnection(connectionStr);
-              //  o.UseSqlite(connection);
-                
-           // });
-
             services.AddEntityFrameworkSqlite().AddDbContext<NinjaOrganizerContext>(o =>
             {
-                //o.UseSqlite("Filename=MyDatabase.db"); //ok dziala
-
-               // o.UseSqlite("Filename=MYSQLCONNSTR_localdb");
-               string conStr = "Data Source=D:\\home\\site\\wwwroot\\MyDatabase.db";
+              //  o.UseSqlite("Filename=MyDatabase.db"); //local
+               string conStr = "Data Source=D:\\home\\site\\wwwroot\\MyDatabase.db"; //server
                 o.UseSqlite(conStr);
 
             });
 
 
             services.AddScoped<INinjaOrganizerRepository, NinjaOrganizerRepository>();
-
             services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
-
 
             var appSettingsFromFile = _configuration.GetSection("AppSettings");
             services.Configure<AppSettings>(appSettingsFromFile);
@@ -115,6 +93,11 @@ namespace NinjaOrganizer.API
                     ValidateAudience = false
                 };
             });
+            //.AddGoogle(op =>
+            //{
+            //    op.ClientId = "557423920267-jusmrhn45qncqmgb3l605g08lt8o80n1.apps.googleusercontent.com";
+            //    op.ClientSecret = "Vw3pind_6zseB3xhTOQ5J_lv";
+            //});
 
 
             services.AddScoped<IUserService, UserService>();
@@ -149,9 +132,7 @@ namespace NinjaOrganizer.API
              .AllowAnyHeader());
              */
             app.UseCors("AllowAll");
-
             app.UseAuthentication();
-
             app.UseStatusCodePages();
             app.UseMvc();
         }

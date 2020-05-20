@@ -22,8 +22,7 @@ namespace NinjaOrganizer.API.Entities
         public DateTime Created { get; set; }
         public DateTime? Updated { get; set; }
 
-        public ICollection<Card> Cards { get; set; }
-               = new List<Card>();
+        public ICollection<Card> Cards { get; set; } = new List<Card>();
 
         [ForeignKey("UserId")]
         public User User { get; set; }

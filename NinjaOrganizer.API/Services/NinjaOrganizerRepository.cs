@@ -10,6 +10,10 @@ using Microsoft.EntityFrameworkCore.Metadata.Internal;
 
 namespace NinjaOrganizer.API.Services
 {
+    /// <summary>
+    /// Desciprion function implemented by INinjaOrganizerRepository can read in "INinjaOrganizerRepository.cs"
+    /// Class "NinjaOrganizerRepository" allow to manipulate Taskboards and Cards.
+    /// </summary>
     public class NinjaOrganizerRepository : INinjaOrganizerRepository
     {
         private readonly NinjaOrganizerContext _context;
@@ -19,33 +23,16 @@ namespace NinjaOrganizer.API.Services
             _context = context ?? throw new ArgumentNullException(nameof(context));
         }
 
-        public IEnumerable<Taskboard> GetTaskboards()
-        {
-            return _context.Taskboards.OrderBy(c => c.Title).ToList();
-        }
 
         public Taskboard GetTaskboard(int taskboardId, bool includeCards)
         {
             if (includeCards)
             {
                 return _context.Taskboards.Include(c => c.Cards)
-                    .Where(c => c.Id == taskboardId).FirstOrDefault();
+                    .Where(t => t.Id == taskboardId).FirstOrDefault();
             }
 
-            return _context.Taskboards
-                    .Where(c => c.Id == taskboardId).FirstOrDefault();
-        }
-
-        public Card GetCardForTaskboard(int taskboardId, int cardId)
-        {
-            return _context.Cards
-               .Where(p => p.TaskboardId == taskboardId && p.Id == cardId).FirstOrDefault();
-        }
-
-        public IEnumerable<Card> GetCardsForTaskboard(int taskboardId)
-        {
-            return _context.Cards
-                          .Where(p => p.TaskboardId == taskboardId).ToList();
+            return _context.Taskboards.Where(t => t.Id == taskboardId).FirstOrDefault();
         }
 
         public IEnumerable<Taskboard> GetTaskboardsForUser(int userId)
@@ -53,15 +40,27 @@ namespace NinjaOrganizer.API.Services
             var taskboards = _context.Taskboards.Where(u => u.UserId == userId).ToList();
 
             foreach (var taskboard in taskboards)
-                taskboard.Cards = _context.Cards.Where(c => c.TaskboardId == taskboard.Id).ToList();
+                taskboard.Cards = _context.Cards.Where(t => t.TaskboardId == taskboard.Id).ToList();
 
             return taskboards;
-            
+
         }
+
+        public Card GetCardForTaskboard(int taskboardId, int cardId)
+        {
+            return _context.Cards.Where(t => t.TaskboardId == taskboardId && t.Id == cardId).FirstOrDefault();
+        }
+
+        public IEnumerable<Card> GetCardsForTaskboard(int taskboardId)
+        {
+            return _context.Cards.Where(t => t.TaskboardId == taskboardId).ToList();
+        }
+
+        
 
         public bool TaskboardExists(int taskboardId)
         {
-            return _context.Taskboards.Any(c => c.Id == taskboardId);
+            return _context.Taskboards.Any(t => t.Id == taskboardId);
         }
 
         public bool UserExist(string userName)

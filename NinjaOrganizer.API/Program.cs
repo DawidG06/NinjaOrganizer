@@ -19,7 +19,7 @@ namespace NinjaOrganizer.API
         public static void Main(string[] args)
         {
             var logger = NLogBuilder
-                    .ConfigureNLog("nlog.config")
+                    .ConfigureNLog("log.config")
                     .GetCurrentClassLogger();
             try
             {
@@ -46,7 +46,7 @@ namespace NinjaOrganizer.API
             }
             catch (Exception ex)
             {
-                logger.Error(ex, "Application stopped because of exception.");
+                logger.Error(ex, "Application stopped because occured exception.");
                 throw;
             }
             finally
@@ -61,11 +61,5 @@ namespace NinjaOrganizer.API
                 .UseNLog()
            .UseKestrel();
 
-        /*
-          public static IWebHostBuilder CreateWebHostBuilder(string[] args) =>
-            WebHost.CreateDefaultBuilder(args)
-                .UseStartup<Startup>()
-                .UseNLog();
-          */
     }
 }

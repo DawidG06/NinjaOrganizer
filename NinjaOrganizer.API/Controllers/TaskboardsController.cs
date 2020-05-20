@@ -11,6 +11,10 @@ using Microsoft.AspNetCore.Authorization;
 
 namespace NinjaOrganizer.API.Controllers
 {
+    /// <summary>
+    /// This class is responsible for taskboard manipulating.
+    /// Authorized access.
+    /// </summary>
     [Authorize]
     [ApiController]
     [Route("users/{userId}/taskboards")]
@@ -28,6 +32,11 @@ namespace NinjaOrganizer.API.Controllers
                 throw new ArgumentNullException(nameof(mapper));
         }
 
+        /// <summary>
+        /// Get all taskboards for specific user.
+        /// </summary>
+        /// <param name="userId"></param>
+        /// <returns></returns>
         [HttpGet]
         public IActionResult GetTaskboards(int userId)
         {
@@ -39,30 +48,39 @@ namespace NinjaOrganizer.API.Controllers
             return Ok(_mapper.Map<IEnumerable<TaskboardWithoutCardsDto>>(taskboardsForUser));
         }
 
+        /// <summary>
+        /// Get specific taskboard.
+        /// </summary>
+        /// <param name="id"></param>
+        /// <param name="includeCards">Allow to return taskboard with cards. This parameter is default false.</param>
+        /// <returns></returns>
         [HttpGet("{id}", Name = "GetTaskboard")]
         public IActionResult GetTaskboard(int id, bool includeCards = false)
         {
             var taskboard = _ninjaOrganizerRepository.GetTaskboard(id, includeCards);
-
             if (taskboard == null)
             {
                 return NotFound();
             }
 
-            taskboard.Cards = _ninjaOrganizerRepository.GetCardsForTaskboard(taskboard.Id).ToList();
-
             if (includeCards)
             {
+                taskboard.Cards = _ninjaOrganizerRepository.GetCardsForTaskboard(taskboard.Id).ToList();
                 return Ok(_mapper.Map<TaskboardDto>(taskboard));
             }
 
             return Ok(_mapper.Map<TaskboardWithoutCardsDto>(taskboard));
         }
 
+        /// <summary>
+        /// Create taskboard for specific user.
+        /// </summary>
+        /// <param name="userId"></param>
+        /// <param name="taskboard"></param>
+        /// <returns></returns>
         [HttpPost]
         public IActionResult CreateTaskboard(int userId, [FromBody] TaskboardForCreationDto taskboard)
         {
-
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
 
@@ -74,12 +92,17 @@ namespace NinjaOrganizer.API.Controllers
 
             var createdTaskboardToReturn = _mapper.Map<Models.TaskboardDto>(finalTaskboard);
 
-            return CreatedAtRoute(
-                "GetTaskboard",
+            //get this taskboard
+            return CreatedAtRoute("GetTaskboard",
                 new { id = createdTaskboardToReturn.Id },
                 createdTaskboardToReturn);
         }
 
+        /// <summary>
+        /// Delete specific taskboard.
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
         [HttpDelete("{id}")]
         public IActionResult DeleteTaskboard(int id)
         {
@@ -96,6 +119,12 @@ namespace NinjaOrganizer.API.Controllers
             return NoContent();
         }
 
+        /// <summary>
+        /// Partially update specific taskboard.
+        /// </summary>
+        /// <param name="id"></param>
+        /// <param name="taskboardForUpdate"></param>
+        /// <returns></returns>
         [HttpPatch("{id}")]
         public IActionResult PartiallyUpdateTaskboard(int id, [FromBody] TaskboardDto taskboardForUpdate)
         {
@@ -118,10 +147,15 @@ namespace NinjaOrganizer.API.Controllers
             //return base.Content("W trakcie implementacji...");
         }
 
+        /// <summary>
+        /// Update specific taskboard.
+        /// </summary>
+        /// <param name="id"></param>
+        /// <param name="taskboard"></param>
+        /// <returns></returns>
         [HttpPut("{id}")]
         public IActionResult UpdateTaskboard(int id,[FromBody] TaskboardForUpdateDto taskboard)
         {
-
             if (taskboard.Description == taskboard.Title)
             {
                 ModelState.AddModelError(
@@ -146,9 +180,7 @@ namespace NinjaOrganizer.API.Controllers
             }
 
             _mapper.Map(taskboard, taskboardEntity);
-
             _ninjaOrganizerRepository.UpdateTaskboard(id, taskboardEntity);
-
             _ninjaOrganizerRepository.Save();
 
             return NoContent();

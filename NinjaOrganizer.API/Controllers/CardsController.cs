@@ -9,16 +9,21 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
+using NinjaOrganizer.API.Entities;
 
 namespace NinjaOrganizer.API.Controllers
 {
+    /// <summary>
+    /// This class is responsible for cards manipulating.
+    /// Authorized access.
+    /// </summary>
+
     [Authorize]
     [ApiController]
     [Route("users/{userId}/taskboards/{taskboardId}/cards")]
     public class CardsController : ControllerBase
     {
         private readonly ILogger<CardsController> _logger;
-        //private readonly IMailService _mailService;
         private readonly INinjaOrganizerRepository _ninjaOrganizerRepository;
         private readonly IMapper _mapper;
 
@@ -28,14 +33,17 @@ namespace NinjaOrganizer.API.Controllers
         {
             _logger = logger ??
                 throw new ArgumentNullException(nameof(logger));
-           // _mailService = mailService ??
-            //    throw new ArgumentNullException(nameof(mailService));
             _ninjaOrganizerRepository = ninjaOrganizerRepository ??
                 throw new ArgumentNullException(nameof(ninjaOrganizerRepository));
             _mapper = mapper ??
                 throw new ArgumentNullException(nameof(mapper));
         }
 
+        /// <summary>
+        /// Get all cards for specific taskboard.
+        /// </summary>
+        /// <param name="taskboardId"></param>
+        /// <returns>Ok if success.</returns>
         [HttpGet]
         public IActionResult GetCards(int taskboardId)
         {
@@ -58,6 +66,12 @@ namespace NinjaOrganizer.API.Controllers
             }
         }
 
+        /// <summary>
+        /// Get specific card for specific taskboard.
+        /// </summary>
+        /// <param name="taskboardId"></param>
+        /// <param name="id"></param>
+        /// <returns>Ok if success.</returns>
         [HttpGet("{id}", Name = "GetCard")]
         public IActionResult GetCard(int taskboardId, int id)
         {
@@ -76,16 +90,15 @@ namespace NinjaOrganizer.API.Controllers
             return Ok(_mapper.Map<CardDto>(card));
         }
 
+        /// <summary>
+        /// Create card for specific taskboard.
+        /// </summary>
+        /// <param name="taskboardId"></param>
+        /// <param name="card"></param>
+        /// <returns></returns>
         [HttpPost]
-        public IActionResult CreateCard(int taskboardId,
-            [FromBody] CardForCreationDto card)
+        public IActionResult CreateCard(int taskboardId, [FromBody] CardForCreationDto card)
         {
-            if (card.Content == card.Title)
-            {
-                ModelState.AddModelError(
-                    "Description",
-                    "The provided description should be different from the name.");
-            }
 
             if (!ModelState.IsValid)
             {
@@ -97,34 +110,28 @@ namespace NinjaOrganizer.API.Controllers
                 return NotFound();
             }
 
-
-
             var finalCard = _mapper.Map<Entities.Card>(card);
-
             _ninjaOrganizerRepository.AddCardForTaskboard(taskboardId, finalCard);
-
             _ninjaOrganizerRepository.Save();
 
-            var createdCardToReturn = _mapper
-                .Map<Models.CardDto>(finalCard);
+            var createdCardToReturn = _mapper.Map<Models.CardDto>(finalCard);
 
-            return CreatedAtRoute(
-                "GetCard",
+            // get this card
+            return CreatedAtRoute("GetCard",
                 new { taskboardId, id = createdCardToReturn.Id },
                 createdCardToReturn);
         }
 
+        /// <summary>
+        /// Update specific card for specific taskboard.
+        /// </summary>
+        /// <param name="taskboardId"></param>
+        /// <param name="id"></param>
+        /// <param name="card"></param>
+        /// <returns></returns>
         [HttpPut("{id}")]
-        public IActionResult UpdateCard(int taskboardId, int id,
-            [FromBody] CardForUpdateDto card)
+        public IActionResult UpdateCard(int taskboardId, int id, [FromBody] CardForUpdateDto card)
         {
-            if (card.Content == card.Title)
-            {
-                ModelState.AddModelError(
-                    "Description",
-                    "The provided description should be different from the name.");
-            }
-
             if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);
@@ -135,8 +142,7 @@ namespace NinjaOrganizer.API.Controllers
                 return NotFound();
             }
 
-            var cardEntity = _ninjaOrganizerRepository
-                .GetCardForTaskboard(taskboardId, id);
+            var cardEntity = _ninjaOrganizerRepository.GetCardForTaskboard(taskboardId, id);
             if (cardEntity == null)
             {
                 return NotFound();
@@ -145,12 +151,18 @@ namespace NinjaOrganizer.API.Controllers
             _mapper.Map(card, cardEntity);
 
             _ninjaOrganizerRepository.UpdateCard(taskboardId, cardEntity);
-
             _ninjaOrganizerRepository.Save();
 
             return NoContent();
         }
 
+        /// <summary>
+        /// Partially update specific card for specific taskboard.
+        /// </summary>
+        /// <param name="taskboardId"></param>
+        /// <param name="id"></param>
+        /// <param name="cardForUpdate"></param>
+        /// <returns></returns>
         [HttpPatch("{id}")]
         public IActionResult PartiallyUpdateCard(int taskboardId, int id, [FromBody] CardDto cardForUpdate)
         {
@@ -180,6 +192,11 @@ namespace NinjaOrganizer.API.Controllers
             return NoContent();
         }
 
+        /// <summary>
+        /// Check is state status is correct.
+        /// </summary>
+        /// <param name="state"></param>
+        /// <returns>True if state is correct, else False.</returns>
         private bool enumIsOk(int state)
         {
             if (state <= 0) return false;
@@ -187,6 +204,13 @@ namespace NinjaOrganizer.API.Controllers
             return true;
         }
 
+
+        /// <summary>
+        /// Delete specific card for specific taskboard.
+        /// </summary>
+        /// <param name="taskboardId"></param>
+        /// <param name="id"></param>
+        /// <returns></returns>
         [HttpDelete("{id}")]
         public IActionResult DeleteCard(int taskboardId, int id)
         {
@@ -203,11 +227,7 @@ namespace NinjaOrganizer.API.Controllers
             }
 
             _ninjaOrganizerRepository.DeleteCard(cardEntity);
-
             _ninjaOrganizerRepository.Save();
-
-            //_mailService.Send("Card deleted.",
-                   // $"Card {cardEntity.Title} with id {cardEntity.Id} was deleted.");
 
             return NoContent();
         }

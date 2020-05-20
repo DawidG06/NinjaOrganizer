@@ -6,9 +6,11 @@ using System.Threading.Tasks;
 
 namespace NinjaOrganizer.API.Services
 {
+    /// <summary>
+    /// Interface for define managment of Taskboards and Cards.
+    /// </summary>
     public interface INinjaOrganizerRepository
     {
-        IEnumerable<Taskboard> GetTaskboards();
 
         Taskboard GetTaskboard(int taskboardId, bool includeCards);
         IEnumerable<Taskboard> GetTaskboardsForUser(int userId);
@@ -16,22 +18,25 @@ namespace NinjaOrganizer.API.Services
         void AddTaskboard(Taskboard taskboard);
         void DeleteTaskboard(Taskboard taskboard);
 
+        bool TaskboardExists(int taskboardId);
+
+        void UpdateTaskboard(int taskboardId, Taskboard taskboard);
+
+
         IEnumerable<Card> GetCardsForTaskboard(int taskboardId);
 
         Card GetCardForTaskboard(int taskboardId, int cardId);
-
-        bool TaskboardExists(int taskboardId);
-
-        bool UserExist(string userName);
-
         void AddCardForTaskboard(int taskboardId, Card card);
+
 
         void UpdateCard(int taskboardId, Card card);
 
-        void UpdateTaskboard(int taskboardId, Taskboard taskboard);
 
         void DeleteCard(Card card);
 
         bool Save();
+
+        bool UserExist(string userName); // TODO przeniesc do userservice
+
     }
 }

@@ -18,9 +18,12 @@ using System.Threading.Tasks;
 
 namespace NinjaOrganizer.API.Controllers
 {
+    /// <summary>
+    /// This class is responsible for users manipulating.
+    /// Authorized access excluding user registration or authentication.
+    /// </summary>
     [Authorize]
     [ApiController]
-   // [Route("api/users")]
     [Route("users")]
     public class UserController : ControllerBase
     {
@@ -39,46 +42,11 @@ namespace NinjaOrganizer.API.Controllers
             _appSettings = appSettings.Value;
         }
 
-        [AllowAnonymous]
-        [HttpPost("authenticate")]
-        public IActionResult Authenticate([FromBody]UserForAuthenticateDto userForAuth)
-        {
-            var user = _userService.Authenticate(userForAuth.Username, userForAuth.Password);
-
-            if (user == null)
-                return BadRequest(new { message = "Username or password is incorrect" });
-
-            var tokenHandler = new JwtSecurityTokenHandler();
-            var key = Encoding.ASCII.GetBytes(_appSettings.Secret);
-            var tokenDescriptor = new SecurityTokenDescriptor
-            {
-                Subject = new ClaimsIdentity(new Claim[]
-                {
-                    new Claim(ClaimTypes.Name, user.Id.ToString())
-                }),
-                Expires = DateTime.UtcNow.AddHours(1), //.AddDays(7), //TODO sprawdzic czy dziala
-                SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature)
-            };
-            var token = tokenHandler.CreateToken(tokenDescriptor);
-            var tokenString = tokenHandler.WriteToken(token);
-            var expiresDate = token.ValidTo;
-
-            // return basic user info and authentication token
-            var userToReturn = _mapper.Map<UserDto>(user);
-
-            return Ok(new
-            {
-                Id = userToReturn.Id,
-                FirstName = userToReturn.FirstName,
-                LastName = userToReturn.LastName,
-                UserName = userToReturn.Username,
-                NumberOfTaskboards = userToReturn.NumberOfTaskboards,
-                Taskboards = userToReturn.Taskboards,
-                Token = tokenString,
-                Expires = expiresDate
-            });
-        }
-
+        /// <summary>
+        /// Register new user.
+        /// </summary>
+        /// <param name="userForRegisterDto"></param>
+        /// <returns></returns>
         [AllowAnonymous]
         [HttpPost("register")]
         public IActionResult Register([FromBody]UserForRegisterDto userForRegisterDto)
@@ -96,23 +64,77 @@ namespace NinjaOrganizer.API.Controllers
                     "The provided username should be different from the password.");
             }
 
+            // map model to entity
             var user = _mapper.Map<User>(userForRegisterDto);
-
             var userToReturn = _mapper.Map<UserDto>(user);
 
             try
             {
                 _userService.Create(user, userForRegisterDto.Password);
+                // redirecting to Get user
                 return CreatedAtRoute("GetUser",
                     new { id = userToReturn.Id }, userToReturn);
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 return BadRequest(new { message = ex.Message });
+                // TODO log
             }
 
         }
 
+        /// <summary>
+        /// User authenticate.
+        /// </summary>
+        /// <param name="userForAuth"></param>
+        /// <returns>Return basic user info and authentication token.</returns>
+        [AllowAnonymous]
+        [HttpPost("authenticate")]
+        public IActionResult Authenticate([FromBody]UserForAuthenticateDto userForAuth)
+        {
+            var user = _userService.Authenticate(userForAuth.Username, userForAuth.Password);
+
+            if (user == null)
+                return BadRequest(new { message = "Username or password is incorrect" });
+
+            // generate token for authorization
+            var tokenHandler = new JwtSecurityTokenHandler();
+            var key = Encoding.ASCII.GetBytes(_appSettings.Secret);
+            var tokenDescriptor = new SecurityTokenDescriptor
+            {
+                Subject = new ClaimsIdentity(new Claim[]
+                {
+                    new Claim(ClaimTypes.Name, user.Id.ToString())
+                }),
+                Expires = DateTime.UtcNow.AddHours(1),
+                SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature)
+            };
+            var token = tokenHandler.CreateToken(tokenDescriptor);
+            var tokenString = tokenHandler.WriteToken(token);
+            var expiresDate = token.ValidTo;
+
+            // map model to entity
+            var userToReturn = _mapper.Map<UserDto>(user);
+
+            // return basic user info and authentication token
+            return Ok(new
+            {
+                Id = userToReturn.Id,
+                FirstName = userToReturn.FirstName,
+                LastName = userToReturn.LastName,
+                UserName = userToReturn.Username,
+                NumberOfTaskboards = userToReturn.NumberOfTaskboards,
+                Taskboards = userToReturn.Taskboards,
+                Token = tokenString,
+                Expires = expiresDate
+            });
+        }
+
+        
+        /// <summary>
+        /// Get all users.
+        /// </summary>
+        /// <returns></returns>
         [HttpGet]
         public IActionResult GetAll()
         {
@@ -122,39 +144,57 @@ namespace NinjaOrganizer.API.Controllers
                 singleUser.Taskboards = _ninjaOrganizerRepository.GetTaskboardsForUser(singleUser.Id).ToList();
             }
 
+            // map model to entity
             var userDto = _mapper.Map<IList<UserDto>>(users);
             return Ok(userDto);
         }
 
+        /// <summary>
+        /// Get specific user.
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
         [HttpGet("{id}", Name = "GetUser")]
         public IActionResult GetById(int id)
         {
             var user = _userService.GetById(id);
             user.Taskboards = _ninjaOrganizerRepository.GetTaskboardsForUser(user.Id).ToList();
+
+            // map model to entity
             var userToReturn = _mapper.Map<UserDto>(user);
             return Ok(userToReturn);
         }
 
+        /// <summary>
+        /// Update specific user.
+        /// </summary>
+        /// <param name="id"></param>
+        /// <param name="userForUpdate"></param>
+        /// <returns></returns>
         [HttpPut("{id}")]
         public IActionResult Update(int id, [FromBody]UserForUpdateDto userForUpdate)
         {
-            // map model to entity and set id
+            // map model to entity
             var user = _mapper.Map<User>(userForUpdate);
             user.Id = id;
 
             try
             {
-                // update user 
                 _userService.Update(user, userForUpdate.Password);
                 return NoContent();
             }
             catch (Exception ex)
             {
-                // return error message if there was an exception
+                // return error message if exception
                 return BadRequest(new { message = ex.Message });
             }
         }
 
+        /// <summary>
+        /// Delete specific user.
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
         [HttpDelete("{id}")]
         public IActionResult Delete(int id)
         {
@@ -162,5 +202,20 @@ namespace NinjaOrganizer.API.Controllers
             return NoContent();
         }
 
+        // for google authentication
+        //[AllowAnonymous]
+        //public IActionResult GoogleLogin()
+        //{
+          
+        //}
+
+        //[AllowAnonymous]
+        //public Task<IActionResult> GoogleResponse()
+        //{
+           
+        //}
+
     }
+
 }
+
