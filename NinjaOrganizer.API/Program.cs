@@ -19,7 +19,7 @@ namespace NinjaOrganizer.API
         public static void Main(string[] args)
         {
             var logger = NLogBuilder
-                    .ConfigureNLog("log.config")
+                    .ConfigureNLog("nlog.config")
                     .GetCurrentClassLogger();
             try
             {

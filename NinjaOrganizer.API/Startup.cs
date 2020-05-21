@@ -44,9 +44,9 @@ namespace NinjaOrganizer.API
 
             services.AddEntityFrameworkSqlite().AddDbContext<NinjaOrganizerContext>(o =>
             {
-              //  o.UseSqlite("Filename=MyDatabase.db"); //local
+                o.UseSqlite("Filename=NinjaOrganizerDatabase.db"); //local
                string conStr = "Data Source=D:\\home\\site\\wwwroot\\MyDatabase.db"; //server
-                o.UseSqlite(conStr);
+              //  o.UseSqlite(conStr);
 
             });
 

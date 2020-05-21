@@ -153,7 +153,10 @@ namespace NinjaOrganizer.API.Services
             return hash;
         }
 
-
+        /// <summary>
+        /// Delete user by id.
+        /// </summary>
+        /// <param name="id"></param>
         public void Delete(int id)
         {
             var user = _context.Users.Find(id);
