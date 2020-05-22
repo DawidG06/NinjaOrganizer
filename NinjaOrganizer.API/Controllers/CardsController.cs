@@ -45,17 +45,24 @@ namespace NinjaOrganizer.API.Controllers
         /// <param name="taskboardId"></param>
         /// <returns>Ok if success.</returns>
         [HttpGet]
-        public IActionResult GetCards(int taskboardId)
+        public IActionResult GetCards(int taskboardId, int userId)
         {
+            var taskboardsForUsers = _ninjaOrganizerRepository.GetTaskboardsForUser(userId);
+            if (taskboardsForUsers == null)
+                return NotFound();
+
+            var taskboard = taskboardsForUsers.FirstOrDefault(t => t.Id == taskboardId);
+
+            if(taskboard == null)
+                return NotFound();
+
+            if (!_ninjaOrganizerRepository.TaskboardExists(taskboard.Id))
+                return NotFound();
+            
             try
             {
-                if (!_ninjaOrganizerRepository.TaskboardExists(taskboardId))
-                {
-                    return NotFound();
-                }
-
-                var cardsForTaskboard = _ninjaOrganizerRepository.GetCardsForTaskboard(taskboardId);
-                return Ok(_mapper.Map<IEnumerable<CardDto>>(cardsForTaskboard));
+                var cards = _ninjaOrganizerRepository.GetCardsForTaskboard(taskboard.Id);
+                return Ok(_mapper.Map<IEnumerable<CardDto>>(cards));
             }
             catch (Exception ex)
             {
@@ -71,19 +78,24 @@ namespace NinjaOrganizer.API.Controllers
         /// <param name="id"></param>
         /// <returns>Ok if success.</returns>
         [HttpGet("{id}", Name = "GetCard")]
-        public IActionResult GetCard(int taskboardId, int id)
+        public IActionResult GetCard(int taskboardId,int userId, int id)
         {
-            if (!_ninjaOrganizerRepository.TaskboardExists(taskboardId))
-            {
+            var taskboardsForUsers = _ninjaOrganizerRepository.GetTaskboardsForUser(userId);
+            if (taskboardsForUsers == null)
                 return NotFound();
-            }
 
-            var card = _ninjaOrganizerRepository.GetCardForTaskboard(taskboardId, id);
+            var taskboard = taskboardsForUsers.FirstOrDefault(t => t.Id == taskboardId);
 
+            if (taskboard == null)
+                return NotFound();
+
+            if (!_ninjaOrganizerRepository.TaskboardExists(taskboard.Id))
+                return NotFound();
+
+            var card = _ninjaOrganizerRepository.GetCardForTaskboard(taskboard.Id, id);
             if (card == null)
-            {
                 return NotFound();
-            }
+            
 
             return Ok(_mapper.Map<CardDto>(card));
         }
@@ -128,19 +140,25 @@ namespace NinjaOrganizer.API.Controllers
         /// <param name="card"></param>
         /// <returns></returns>
         [HttpPut("{id}")]
-        public IActionResult UpdateCard(int taskboardId, int id, [FromBody] CardForUpdateDto card)
+        public IActionResult UpdateCard(int taskboardId, int id, int userId, [FromBody] CardForUpdateDto card)
         {
             if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);
             }
 
-            if (!_ninjaOrganizerRepository.TaskboardExists(taskboardId))
-            {
+            var taskboardsForUsers = _ninjaOrganizerRepository.GetTaskboardsForUser(userId);
+            if (taskboardsForUsers == null)
                 return NotFound();
-            }
 
-            var cardEntity = _ninjaOrganizerRepository.GetCardForTaskboard(taskboardId, id);
+            var taskboard = taskboardsForUsers.FirstOrDefault(t => t.Id == taskboardId);
+            if (taskboard == null)
+                return NotFound();
+
+            if (!_ninjaOrganizerRepository.TaskboardExists(taskboard.Id))
+                return NotFound();
+
+            var cardEntity = _ninjaOrganizerRepository.GetCardForTaskboard(taskboard.Id, id);
             if (cardEntity == null)
             {
                 return NotFound();
@@ -162,9 +180,20 @@ namespace NinjaOrganizer.API.Controllers
         /// <param name="cardForUpdate"></param>
         /// <returns></returns>
         [HttpPatch("{id}")]
-        public IActionResult PartiallyUpdateCard(int taskboardId, int id, [FromBody] CardDto cardForUpdate)
+        public IActionResult PartiallyUpdateCard(int taskboardId, int id, int userId, [FromBody] CardDto cardForUpdate)
         {
-            var card = _ninjaOrganizerRepository.GetCardForTaskboard(taskboardId, id);
+            var taskboardsForUsers = _ninjaOrganizerRepository.GetTaskboardsForUser(userId);
+            if (taskboardsForUsers == null)
+                return NotFound();
+
+            var taskboard = taskboardsForUsers.FirstOrDefault(t => t.Id == taskboardId);
+            if (taskboard == null)
+                return NotFound();
+
+            if (!_ninjaOrganizerRepository.TaskboardExists(taskboard.Id))
+                return NotFound();
+
+            var card = _ninjaOrganizerRepository.GetCardForTaskboard(taskboard.Id, id);
             if (card == null)
                 return NotFound();
 
@@ -210,15 +239,21 @@ namespace NinjaOrganizer.API.Controllers
         /// <param name="id"></param>
         /// <returns></returns>
         [HttpDelete("{id}")]
-        public IActionResult DeleteCard(int taskboardId, int id)
+        public IActionResult DeleteCard(int taskboardId, int id, int userId)
         {
-            if (!_ninjaOrganizerRepository.TaskboardExists(taskboardId))
-            {
+            var taskboardsForUsers = _ninjaOrganizerRepository.GetTaskboardsForUser(userId);
+            if (taskboardsForUsers == null)
                 return NotFound();
-            }
 
-            var cardEntity = _ninjaOrganizerRepository
-                .GetCardForTaskboard(taskboardId, id);
+            var taskboard = taskboardsForUsers.FirstOrDefault(t => t.Id == taskboardId);
+            if (taskboard == null)
+                return NotFound();
+
+            if (!_ninjaOrganizerRepository.TaskboardExists(taskboard.Id))
+                return NotFound();
+
+
+            var cardEntity = _ninjaOrganizerRepository.GetCardForTaskboard(taskboard.Id, id);
             if (cardEntity == null)
             {
                 return NotFound();

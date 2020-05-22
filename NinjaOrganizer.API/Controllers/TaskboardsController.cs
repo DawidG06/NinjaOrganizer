@@ -8,6 +8,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.CodeAnalysis.CSharp.Syntax;
 
 namespace NinjaOrganizer.API.Controllers
 {
@@ -55,13 +56,16 @@ namespace NinjaOrganizer.API.Controllers
         /// <param name="includeCards">Allow to return taskboard with cards. This parameter is default false.</param>
         /// <returns></returns>
         [HttpGet("{id}", Name = "GetTaskboard")]
-        public IActionResult GetTaskboard(int id, bool includeCards = false)
+        public IActionResult GetTaskboard(int id, int userId, bool includeCards = false)
         {
-            var taskboard = _ninjaOrganizerRepository.GetTaskboard(id, includeCards);
+            var taskboardsForUser = _ninjaOrganizerRepository.GetTaskboardsForUser(userId);
+            var taskboard = taskboardsForUser.FirstOrDefault(t => t.Id == id);
+
             if (taskboard == null)
-            {
                 return NotFound();
-            }
+
+            if (!_ninjaOrganizerRepository.TaskboardExists(taskboard.Id))
+                return NotFound();
 
             if (includeCards)
             {
@@ -104,16 +108,17 @@ namespace NinjaOrganizer.API.Controllers
         /// <param name="id"></param>
         /// <returns></returns>
         [HttpDelete("{id}")]
-        public IActionResult DeleteTaskboard(int id)
+        public IActionResult DeleteTaskboard(int id, int userId)
         {
-            if (!_ninjaOrganizerRepository.TaskboardExists(id))
+            var taskboardsForUser = _ninjaOrganizerRepository.GetTaskboardsForUser(userId);
+            var taskboard = taskboardsForUser.FirstOrDefault(t => t.Id == id);
+            if (taskboard == null)
                 return NotFound();
 
-            var taskboardEntity = _ninjaOrganizerRepository.GetTaskboard(id, false);
-            if (taskboardEntity == null)
+            if (!_ninjaOrganizerRepository.TaskboardExists(taskboard.Id))
                 return NotFound();
 
-            _ninjaOrganizerRepository.DeleteTaskboard(taskboardEntity);
+            _ninjaOrganizerRepository.DeleteTaskboard(taskboard);
             _ninjaOrganizerRepository.Save();
 
             return NoContent();
@@ -126,9 +131,11 @@ namespace NinjaOrganizer.API.Controllers
         /// <param name="taskboardForUpdate"></param>
         /// <returns></returns>
         [HttpPatch("{id}")]
-        public IActionResult PartiallyUpdateTaskboard(int id, [FromBody] TaskboardDto taskboardForUpdate)
+        public IActionResult PartiallyUpdateTaskboard(int id, int userId, [FromBody] TaskboardDto taskboardForUpdate)
         {
-            var taskboard = _ninjaOrganizerRepository.GetTaskboard(id,false);
+            var taskboardsForUser = _ninjaOrganizerRepository.GetTaskboardsForUser(userId);
+            var taskboard = taskboardsForUser.FirstOrDefault(t => t.Id == id);
+
             if (taskboard == null)
                 return NotFound();
 
@@ -154,8 +161,9 @@ namespace NinjaOrganizer.API.Controllers
         /// <param name="taskboard"></param>
         /// <returns></returns>
         [HttpPut("{id}")]
-        public IActionResult UpdateTaskboard(int id,[FromBody] TaskboardForUpdateDto taskboard)
+        public IActionResult UpdateTaskboard(int id, int userId, [FromBody] TaskboardForUpdateDto taskboard)
         {
+            
             if (taskboard.Description == taskboard.Title)
             {
                 ModelState.AddModelError(
@@ -168,19 +176,16 @@ namespace NinjaOrganizer.API.Controllers
                 return BadRequest(ModelState);
             }
 
-            if (!_ninjaOrganizerRepository.TaskboardExists(id))
+            var taskboardsForUser = _ninjaOrganizerRepository.GetTaskboardsForUser(userId);
+            var ent_taskboard = taskboardsForUser.FirstOrDefault(t => t.Id == id);
+
+            if (!_ninjaOrganizerRepository.TaskboardExists(ent_taskboard.Id) || ent_taskboard == null)
             {
                 return NotFound();
             }
 
-            var taskboardEntity = _ninjaOrganizerRepository.GetTaskboard(id, false);
-            if (taskboardEntity == null)
-            {
-                return NotFound();
-            }
-
-            _mapper.Map(taskboard, taskboardEntity);
-            _ninjaOrganizerRepository.UpdateTaskboard(id, taskboardEntity);
+            _mapper.Map(taskboard, ent_taskboard);
+            _ninjaOrganizerRepository.UpdateTaskboard(id, ent_taskboard);
             _ninjaOrganizerRepository.Save();
 
             return NoContent();

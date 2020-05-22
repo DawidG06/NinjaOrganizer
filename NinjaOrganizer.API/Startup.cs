@@ -46,7 +46,7 @@ namespace NinjaOrganizer.API
             {
                 o.UseSqlite("Filename=NinjaOrganizerDatabase.db"); //local
                string conStr = "Data Source=D:\\home\\site\\wwwroot\\MyDatabase.db"; //server
-              //  o.UseSqlite(conStr);
+               // o.UseSqlite(conStr);
 
             });
 
